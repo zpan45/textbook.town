@@ -1,0 +1,22 @@
+#Project Elixir
+CS2212 Software Engineering Team 4
+
+##Meet the Team:
+* Barucha, Nicole
+* Cao, Luna 
+* Cook, Mark
+* Elder, Nicholas
+* Kolman, Philip
+* Ouda, Abdulla Abdelkader
+* Pan, Zhengyang
+* Saly, Pierce
+* Wong, Jeremy
+* TA: Jennie
+* Professor: Ethan
+
+##Useful Links:
+* [Google Drive](https://drive.google.com/drive/u/0/folders/0B33lPR-1w35LU0pGaEViNVBPNnM): For meeting minutes, some static design assets, planning, etc.
+* [Discord](https://discord.gg/sty82bT): Drop in to voice chat room while you are working on the project. Text chat channels also avalible.
+* [Facebook Messenger](https://www.messenger.com/t/1520017064690069): For non development specific discussion of things like logistics.
+* [Github Repository](https://github.com/nelder/elixir): Project collaboration and storage tool.
+* [Trello](https://trello.com/b/3cZF8Gg7/elixir-cs2212-project): Project feature progress tracking. *Note we could change to github projects if we test it and deem it just as good.*

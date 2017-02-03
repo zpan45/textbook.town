@@ -43,4 +43,4 @@ git clone https://github.com/nelder/elixir
 1. Something about merge requests to come.
 
 ##Project Structure
-* [Words](https://nelder.github.io/elixir/): for required team github page about us and our project.
+* [Our Website](https://nelder.github.io/elixir/): for required team github page about us and our project.

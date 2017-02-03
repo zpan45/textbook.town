@@ -1,7 +1,7 @@
 # Setup
 title:        Elixir - CS 2212 Team 4
 tagline:      Textbook Bidding Project
-baseurl:      "/Elixir/"
+baseurl:      "/elixir/"
 paginate:     1
 
 # About/contact

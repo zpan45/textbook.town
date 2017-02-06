@@ -1,13 +1,13 @@
 # Setup
 title:        Elixir - CS 2212 Team 4
 tagline:      Textbook Bidding Project
-baseurl:      "/elixir/"
+baseurl:      "/"
 paginate:     1
 
 # About/contact
 author:
   name:       Abdulla Ouda
-  url:        http://nelder.github.io
+  url:        http://textbook.town
 
 # Gems
 gems:

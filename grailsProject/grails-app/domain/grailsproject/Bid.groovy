@@ -5,7 +5,6 @@ class Bid {
 
     static belongsTo = [auction: Auction, bidder: Profile]
 
-
     static constraints = {
     }
 }

@@ -1,0 +1,16 @@
+#Thumbs.db
+#.DS_Store
+#.gradle
+#build/
+#classes/
+#*.iml
+#*.ipr
+#*.iws
+#.project
+#.settings
+#.classpath
+#/grails-app/assets/javascripts/bundle.js
+#/prodDb.mv.db
+#/node_modules
+#.gradletasknamecache
+#src/main/webapp/

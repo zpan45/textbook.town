@@ -1,4 +1,4 @@
-package grailsproject
+package grails3.example
 
 class Auction {
     int minimumBid          // minimum price seller is willing to sell for
@@ -13,5 +13,7 @@ class Auction {
     static constraints = {
         closingTime nullable: false
         minimumBid nullable: false
+        textbook nullable: false
+        bids nullable: true
     }
 }

@@ -13,6 +13,9 @@ class User implements Serializable {
 
 	String username
 	String password
+
+	static hasOne = [profile: Profile]
+
 	boolean enabled = true
 	boolean accountExpired
 	boolean accountLocked

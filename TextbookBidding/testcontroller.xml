@@ -1,0 +1,42 @@
+<RestClientRequest>
+  <option name="biscuits">
+    <list />
+  </option>
+  <option name="httpMethod" value="GET" />
+  <option name="urlBase" value="http://localhost:8080" />
+  <option name="urlPath" value="/api/test" />
+  <option name="headers">
+    <list>
+      <KeyValuePair>
+        <option name="key" value="Content-Type" />
+        <option name="value" value="application/json" />
+      </KeyValuePair>
+      <KeyValuePair>
+        <option name="key" value="Cache-Control" />
+        <option name="value" value="no-cache" />
+      </KeyValuePair>
+      <KeyValuePair>
+        <option name="key" value="Accept" />
+        <option name="value" value="application/json" />
+      </KeyValuePair>
+      <KeyValuePair>
+        <option name="key" value="Authorization" />
+        <option name="value" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJwcmluY2lwYWwiOiJINHNJQUFBQUFBQUFBSlZTUFU4Y01SQ2RQUTRCUWlJUUtVZ1UwQUJkdENlUjhxcUFEaVMwQXNSeERVaEV2dDFoWVwvRGFHOXNMZHcyNkNnb0tFQjhTRW4rQmY1STArUUVSRkxUVXRCa3ZISHRKZzNCbGo1XC9mZVwvUEd0NFwvUWJ6UjhpVFhqd3ZpcHlHSXVmWk5xTG1PRFlhYTViZnVaUVIyaHpSRkxPYkJCRlhoZVhnbThBRW84c3ZBeDJHWDdyQ0tZakN1cnpWME1iYldsWVU3cCtJVnhSN01FRDVUZTgxKzVRNlh4SDRHQzJqc3J3Y0FtakxFd1ZKbTBLMHJXV2luWEdHM0NhRkVMVkxqblNwOUN1a0ZwT1JPbUZ6cUFralVGUmdFTXM4eCtWNlRLMFZqNDhHdzJzMXhVNm1pckFReW16Qmh5OTE4bmRldXN1M3RuVTFJSFArQVF5cTNVbzBYWnpUcW83M2o4QlNVRWRjMlZORE1ObWFpSTczQW5UdnlkeWZQZnB6ZWRSZ21BTXZuODlwdWlQakVQblpcL2JUMU41MEY1b1liekhlZ0dydGxKeU0xWXdiMmgweW4rdTF5NnVIbyszK2tqWklSYmZQNCtacnlcL0p0UmRVa2pMTnJPcVpFZEVlbE4yZXlPZmZKdTlPb2UzWGVaSUtwQjhsTFVhdkVnVXh0VnZXU25UenRqQzB2aHJVdmpYcXRYVjNLbHVhSTJtTzVDMjdXZm1Cb2ttZFBKejlPcDIrb1wvZkwwTFwvUFJJYVUrR2dCV3NtU0p1cWoyNnZKNGN2N2s5eFwvOXlcL1wvQldTUUZpMFBBd0FBIiwic3ViIjoidGVzdCIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJleHAiOjE0ODc3MTc0ODEsImlhdCI6MTQ4NzcxMzg4MX0.AH5Mk_oyVooR5HfcNkcIucM4w69ljr1fRcNRTEqZB8M" />
+      </KeyValuePair>
+    </list>
+  </option>
+  <option name="parameters">
+    <list>
+      <KeyValuePair>
+        <option name="key" value="username" />
+        <option name="value" value="test" />
+      </KeyValuePair>
+    </list>
+  </option>
+  <option name="parametersEnabled" value="true" />
+  <option name="haveTextToSend" value="false" />
+  <option name="haveFileToSend" value="false" />
+  <option name="isFileUpload" value="false" />
+  <option name="textToSend" value="" />
+  <option name="filesToSend" value="" />
+</RestClientRequest>

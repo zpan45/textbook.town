@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<!-- Page Wide Settings -->
+<head>
+
+	<!-- Page Title -->
+	<title>Templates</title>
+	<!-- Import JS/CSS System Wide Libs -->
+	<link rel="import" href="components/head.html">
+
+</head>
+
+
+
+
+<!-- Client Facing Content-->
+<body>
+
+	<!-- Menu and Top Section Container -->
+	<div id="top"></div>
+
+	<!-- Display Books -->
+	<div id="bookList">
+	</div>
+	
+
+</body>
+</html>
+
+
+
+
+<!-- Page Client Side Functionality -->
+<script type="text/javascript">
+
+////
+// Page Render 
+//
+$(function() {
+
+	//Render red section at top and enclosed menu.
+	render("#top", "tp/head.html", {title: "Find the Perfect Textbook:"})
+	render("#menu", "tp/menu.html", {auth_action: "#", auth_link: "Login"})
+
+
+	//Summon books data with AJAX call.
+	$.ajax({
+		url: 'api/bookList.java?date=1029302&title=book%20title%20here',
+		dataType: 'json',
+		success: function(data){
+
+			//On AJAX success loop over and render results
+			$.each(data.books, function(i, book){
+				render("#bookList", "tp/book.html", {title: book.title, price: book.price, date_closing: book.date_closing, subject: book.subject, img: book.image}, "APPEND_MODE")
+			});
+
+		}
+	});
+
+	
+
+
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

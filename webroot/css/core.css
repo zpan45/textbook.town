@@ -1,0 +1,56 @@
+/* Site Wide CSS */
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+body{
+	margin:0px;
+	border:0px;
+	font-size: 14px;
+	font-family: 'Roboto', sans-serif;
+	font-weight: 300;
+	background-color: #EBF5F2;
+}
+
+/* Menu CSS */
+#menu{
+	width: 100%;
+}
+#menu .link{
+	text-decoration: none;
+	color: #ffffff;
+	display: inline-block;
+	margin-top:24px;
+	margin-left:20px;
+}
+#menu .link:hover{
+	border-bottom: 1px solid white;
+}
+
+/* Head HTML */
+h1{
+	font-family: 'Josefin Sans', sans-serif;
+	color: #FFFFFF;
+	font-size:35px;
+}
+
+/* Book List */
+#bookList{
+	margin-top:30px;
+	width:100%;
+	padding-left:5%;
+	padding-right:5%;
+}
+
+#bookList .bookTile{
+	display: inline-block;
+	background-color: #ffffff;
+	width:100%;
+	margin-bottom:50px;
+	position:relative;
+	padding:30px;
+	padding-left:110px;
+
+}

@@ -62,26 +62,51 @@ $(function() {
 	render("#sbar", "tp/searchbar.html")
 
 
-	//Summon books data with AJAX call.
+	//Summon books data with AJAX call for default render.
 	$.ajax({
-		url: 'api/bookList.java?date=1029302&title=book%20title%20here',
+		url: 'api/bookList.java',
 		dataType: 'json',
 		success: function(data){
-
 			//On AJAX success loop over and render results
-			$.each(data.books, function(i, book){
-				render("#bookList", "tp/book.html", {title: book.title, price: book.price, date_closing: book.date_closing, subject: book.subject, img: book.image}, "APPEND_MODE")
-			});
-
+			renderBookList(data.books);
 		}
 	});
 
-	
+
+
 
 
 });
+
+
+
+
 </script>
 
+<!-- Page Action Functions -->
+<script type="text/javascript">
+
+	////
+	// SEARCH
+
+	//On key press event for search bar LISTENER
+	function searchBarListener(e) {
+	    if (e.keyCode == 13) {
+	        submitSearch();
+	        return false;
+	    }
+	}
+
+	//On Search Function ACTION.
+	function submitSearch(){
+		query = $('#search_bar_main').val();
+		$.get('api/bookList.java?q=' + query, function(res){
+			res = $.parseJSON(res)
+			renderBookList(res.books);
+		});
+	}
+
+</script>
 
 
 

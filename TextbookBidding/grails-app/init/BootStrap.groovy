@@ -10,6 +10,8 @@ class BootStrap {
         def user = new User(username: 'test', password: '2212',
                             profile: new Profile(displayName: 'Philip', contactMethod: 'facebook')).save()
         UserRole.create(user, role, true)
+
+
     }
     def destroy = {
     }

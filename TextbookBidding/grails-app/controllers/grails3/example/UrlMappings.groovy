@@ -8,6 +8,7 @@ class UrlMappings {
         "/api/test"(controller: "test", action: "viewAccount", method: "GET")
         "/api/json"(controller: "test", action: "simplejson", method: "GET")
         "/api/add"(controller: "textbook", action: "simpleAdd", method: "POST")
+        "/api/update"(controller: "file", action: "upload", method: "POST")
 
 
         "/"(view:"/index")

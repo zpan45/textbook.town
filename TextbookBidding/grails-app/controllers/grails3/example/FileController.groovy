@@ -3,6 +3,8 @@ package grails3.example
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.rest.RestfulController
+import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.multipart.MultipartHttpServletRequest
 
 @Secured(['ROLE_USER'])
 class FileController extends RestfulController{
@@ -24,7 +26,7 @@ class FileController extends RestfulController{
     // POST method to receive some info
     // @Secured(['ROLE_USER'])
     def upload() {
-        def downloadedFile = request.getFile("file")
+        def downloadedFile = request.getFile("myFile")
         // for some reason params.textName etc. is giving me null, so get the JSON explicitly and access it
         String baseImageName = UUID.randomUUID().toString();
         println(baseImageName)

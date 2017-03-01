@@ -135,6 +135,9 @@ grails:
                     - pattern: '/api/signup'
                       filters: 'anonymousAuthenticationFilter,restExceptionTranslationFilter'
 
+                    - pattern: '/api/test'
+                      filters: 'anonymousAuthenticationFilter,restExceptionTranslationFilter'
+
                     - pattern: '/api/**'
                       filters: 'JOINED_FILTERS,-anonymousAuthenticationFilter,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter,-rememberMeAuthenticationFilter'
 

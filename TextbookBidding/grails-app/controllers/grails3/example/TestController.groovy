@@ -19,36 +19,20 @@ class TestController extends RestfulController {
     // This allows a logged-in user to get a json of a user's profile by specifying username
 
 
-    @Secured(['ROLE_USER'])
     def viewAccount() {
-        def username = params.username
-        def account = User.findByUsername(username)
-        def profile = account.getProfile()
+//        def username = params.username
+//        def account = User.findByUsername(username)
+//        def profile = account.getProfile()
 
         def j = [:]
         j['item'] = 'hello'
         j['number'] = 9
-        j['profile'] = profile
+        // j['profile'] = profile
         render j as JSON
     }
 
 
-
-    @Secured(['ROLE_USER'])
     def simplejson() {
 
-    }
-    // Shows the basic idea of calling a controller method by URL
-    // Security/Authentication will be integrated later.
-    def getUserPosts(){
-        System.out.println('request received.')
-        def uname = params.userName
-        def account = UserAccount.find{userName == uname}
-        if(account!=null){
-            respond account.getProfile().getPosts()
-        }
-        else{
-            response.status = 404
-        }
     }
 }

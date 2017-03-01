@@ -7,6 +7,7 @@ class UrlMappings {
         "/api/signup"(controller: "user", action: "signUp", method: "POST")
         "/api/test"(controller: "test", action: "viewAccount", method: "GET")
         "/api/json"(controller: "test", action: "simplejson", method: "GET")
+        "/api/default/test"(controller: "textbook", action: "testing", method: "POST")
         "/api/add"(controller: "textbook", action: "simpleAdd", method: "POST")
         "/api/imageFile"(controller: "file", action: "upload", method: "POST")
 

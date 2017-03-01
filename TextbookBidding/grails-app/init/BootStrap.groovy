@@ -1,5 +1,6 @@
 import grails3.example.Profile
 import grails3.example.Role
+import grails3.example.Textbook
 import grails3.example.User
 import grails3.example.UserRole
 
@@ -17,6 +18,7 @@ class BootStrap {
         def u = new User(username: 'Pierce', password: 'Grails',
                 profile: new Profile(displayName: 'Pierce', contactMethod: 'TWITTER')).save()
         UserRole.create(u, role, true)
+
 
 
 

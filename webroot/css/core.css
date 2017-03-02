@@ -111,3 +111,35 @@ h1{
 	background-color: #13212B;
 	color:#6C96AE;	
 }
+
+/* thee pane div*/
+
+#threePane{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  background-color: #eaf6f7;
+}
+
+#threePane > div {
+  width: 200px;
+  height: 300px;
+  background-color: #d84c4c;
+}
+
+/* two pane pane div*/
+
+#twoPane{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  background-color: #eaf6f7;
+}
+
+#twoPane > div {
+  width: 200px;
+  height: 300px;
+  background-color: #d84c4c;
+}

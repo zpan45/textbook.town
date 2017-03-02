@@ -112,6 +112,38 @@ $(function() {
 
 </script>
 
+<script type="text/javascript">
+// book form > json
+  	$.fn.serializeObject = function() {
+  	var o = {};
+  	var a = this.serializeArray();
+  	$.each(a, function() {
+    	if (o[this.name] !== undefined) {
+      		if (!o[this.name].push) {
+        		o[this.name] = [o[this.name]];
+      		}
+      		o[this.name].push(this.value || '');
+    	} else {
+      		o[this.name] = this.value || '';
+    	}
+  	});
+  	return o;
+	};
+ // json to string on submit and post to dummy file
+	$(function() {
+  	$('form').submit(function() {
+    	var data ;
+    	data = JSON.stringify($('form').serializeObject());
+    	$.ajax({
+    		type: 'post',
+    		url: 'api/newBook.java',
+    		data: data,
+    		dataType: 'json'
+    	});
+    	return false;
+  	});
+});
+</script>
 
 
 

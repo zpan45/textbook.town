@@ -15,6 +15,8 @@
 
 		<!-- CSS -->
 		<link rel="stylesheet" type="text/css" href="css/core.css">
+		<link rel="stylesheet" type="text/css" href="css/index.css">
+
 
 		<!-- FONT --><!-- TODO: reduce font weight use before production. -->
 		<link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i" rel="stylesheet">
@@ -23,11 +25,27 @@
 </head>
 <body>
 
-	<div id="menu"></div>
-	<div id="splash"></div>
-    <div id="how"></div>
-    <div id="search"></div>
-    <div id="sell"></div>
+	<!-- Splash Section -->
+	<div id="head" style="background-color:#C4494D;">
+		<div id="menu"></div>
+		<div id="splash" style="margin-top:110px;padding-bottom:45px;padding-left:45px;padding-right:45px;"></div>
+		<center><span class="mid_subtitle"><i>Sell your books to the <b>highest bidder</b>. Pay what you think the book is <b>worth</b>.</i></span></center>
+		<span style="display:inline-block;height:20px;"></span>
+	</div>
+	<div style="background-color:#C4494D;">
+		<img src="img/book_div.png" style="width:100%;margin-bottom:-5px;">
+	</div>
+
+	<!-- Info Section -->
+	<div style="background-color:#FFFFFF;padding:50px;padding-top:0px;">
+	    <div id="how"></div>
+	    <div id="search"></div>
+    </div>
+
+    <!-- Info Section Two -->
+	<div style="background-color:#D74C4D;padding:50px;padding-top:0px;">
+   		<div id="sell"></div>
+   	</div>
 
 </body>
 
@@ -38,23 +56,47 @@
 //
 $(function() {
 
-	//Render red section at top and enclosed menu.
+	//Render Splash
 	render("#menu", "tp/menu.html", {auth_action: "#", auth_link: "Login"})
-	render("#menu", "tp/indexSplash.html")
-	render("#how", "tp/threePane.html", {title: "How it Works"})
-    render("#search", "tp/twoPane.html", {title: "Find a Book"})
-    render("#sell", "tp/twoPane.html", {title: "Sell a Book"})
+	render("#splash", "tp/indexSplash.html")
 
+	//Render Process Section
+	$.get("tp/indexTextBrick.html", function(tmp) {
 
-	//Summon books data with AJAX call for default render.
-	$.ajax({
-		url: 'api/bookList.java',
-		dataType: 'json',
-		success: function(data){
-			//On AJAX success loop over and render results
-			renderBookList(data.books);
-		}
+			//Prepre render a nested template. 
+			first = Mustache.render(tmp, {title: "Post books you do not need anymore.", sub: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do."});
+			second = Mustache.render(tmp, {title: "Your classmates bid their valuation.", sub: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do."});
+			third = Mustache.render(tmp, {title: "Winner Selected & Trade on Campus", sub: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do."});
+
+			//Render parent template.
+			render("#how", "tp/threePane.html", {
+				title: "How it Works",
+				first: first,
+				second: second,
+				third: third
+			});
 	});
+
+	//Render search book section
+    render("#search", "tp/twoPane.html", {title: "Find a Book"});
+
+    //Render Sell book section
+    render("#sell", "tp/onePane.html", {
+    	title: "Sell your Book", 
+    	t_bg:"#FFFFFF", 
+    	t_c: "#D64C4E",  
+    	img: "img/book_money.png", 
+    	side: 
+    		`Unlock your<br> 
+    		textbooks<br> 
+    		value.<br> 
+    		SELL
+    		`
+    });
+
+
+
+
 
 
 

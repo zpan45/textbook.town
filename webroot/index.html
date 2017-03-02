@@ -22,12 +22,11 @@
 
 </head>
 <body>
-	<div id="top"></div>
 
+	<div id="menu"></div>
+	<div id="splash"></div>
     <div id="how"></div>
-
     <div id="search"></div>
-
     <div id="sell"></div>
 
 </body>
@@ -40,8 +39,8 @@
 $(function() {
 
 	//Render red section at top and enclosed menu.
-	render("#top", "tp/head.html", {title: "Welcome to Textbook Town"})
 	render("#menu", "tp/menu.html", {auth_action: "#", auth_link: "Login"})
+	render("#menu", "tp/indexSplash.html")
 	render("#how", "tp/threePane.html", {title: "How it Works"})
     render("#search", "tp/twoPane.html", {title: "Find a Book"})
     render("#sell", "tp/twoPane.html", {title: "Sell a Book"})

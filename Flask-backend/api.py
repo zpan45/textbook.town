@@ -346,15 +346,52 @@ def add_book():
     print(pubYear, closingDate, rating, bestPercent, worstPercent, minimumBid)
 
 
-
-    user = g.user
-    print(user.username)
-
-    # print(file.filename, f2.filename)
+    # Yay now we know everything is valid!
 
 
 
     # CREATE UNIQUE FILENAMES AND STORE
+
+    coverPath = uniqueFileName(cover.filename)
+    cover.save(os.path.join(app.config['UPLOAD_FOLDER'], coverPath))
+    bestPath = uniqueFileName(best.filename)
+    best.save(os.path.join(app.config['UPLOAD_FOLDER'], bestPath))
+    worstPath = uniqueFileName(worst.filename)
+    worst.save(os.path.join(app.config['UPLOAD_FOLDER'], worstPath))
+    averagePath = uniqueFileName(average.filename)
+    average.save(os.path.join(app.config['UPLOAD_FOLDER'], averagePath))
+
+
+    seller = g.user.id
+    print(seller)
+
+    # Create Textbook object with all info except auction id
+    newBook = Textbook(title=title, author=author, isbn=isbn, publisher=publisher, description=desc, version=version,
+                       condition=rating, course=course, coverPhotoName=coverPath, bestPhotoName=bestPath,
+                       worstPhotoName=worstPath, averagePhotoName=averagePath, bestPercent=bestPercent,
+                       worstPercent=worstPercent, seller=seller)
+
+    # Create Auction object with all info except textbook id
+    newAuction = Auction(minimumBid=minimumBid, salePrice=0, isCurrent=True, closingDate=closingDate)
+
+    # add our new objects
+    db.session.add(newAuction)
+    db.session.add(newBook)
+    # flush to update db so we can get their ids
+    db.session.flush()
+
+    # update auction id of textbook and textbook id of auction
+    newBook.auction = newAuction.id
+    newAuction.textbook = newBook.id
+    # commit!
+    db.session.commit()
+
+    # textbook = db.Column(db.Integer)                 # id of the textbook for this auction
+    # minimumBid = db.Column(db.Integer)               # minimum bid
+    # salePrice = db.Column(db.Integer)                # sale price, updated each time a bid comes in, starts at 0 if no bids
+    # isCurrent = db.Column(db.Boolean)                # whether or not auction is open
+    # closingDate = db.Column(db.Date)
+
 
     # if allowedFile(file.filename) and allowedFile(f2.filename):
     #     n1 = uniqueFileName(file.filename)

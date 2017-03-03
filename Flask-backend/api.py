@@ -74,14 +74,14 @@ class Textbook(db.Model):
     '''
     __tablename__ = 'textbooks'
     id = db.Column(db.Integer, primary_key=True)    # id: primary key
-    # title = db.Column(db.String(200))               # title
-    # author = db.Column(db.String(200))              # author
-    # isbn = db.Column(db.String(200))                # isbn
-    # publisher = db.Column(db.String(200))           # publisher
-    # description = db.Column(db.Text)                # description of book
-    # version = db.Column(db.String(32))              # version
+    title = db.Column(db.Text)                      # title
+    author = db.Column(db.Text)                     # author
+    isbn = db.Column(db.Text)                       # isbn
+    publisher = db.Column(db.Text)                  # publisher
+    description = db.Column(db.Text)                # description of book
+    version = db.Column(db.Text)                    # version
     condition = db.Column(db.Integer)               # 0-100 rating of textbook quality
-    course = db.Column(db.String(50))               # course this book is used in
+    course = db.Column(db.Text)                     # course this book is used in
     coverPhotoName = db.Column(db.String(50))       # filename of cover photo, stored in ./img/
     bestPhotoName = db.Column(db.String(50))        # filename of best photo, stored in ./img/
     worstPhotoName = db.Column(db.String(50))       # filename of worst photo, stored in ./img/
@@ -111,9 +111,9 @@ class Auction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     textbook = db.Column(db.Integer)                 # id of the textbook for this auction
     minimumBid = db.Column(db.Integer)               # minimum bid
-    salePrice = db.Column(db.Integer)                # sale price, updated each time a bid comes in
+    salePrice = db.Column(db.Integer)                # sale price, updated each time a bid comes in, starts at 0 if no bids
     isCurrent = db.Column(db.Boolean)                # whether or not auction is open
-    closingTime = db.Column(db.DateTime)             # MAKE THIS A DATE ONLY?
+    closingDate = db.Column(db.Date)                 # closing date (auction ends at midnight ET of this day)
 
 
 ###### APP ROUTES (API ENDPOINTS) ######
@@ -167,7 +167,8 @@ def new_user():
     # password too short
     if len(password1) < 6:
         return jsonify({'status': 'failure', 'message': 'password_too_short'})
-    # if there is already a user with that name
+
+    # already a user with that name
     if User.query.filter_by(username=username).first() is not None:
         # return failure message
         return jsonify({'status': 'failure', 'message': 'username_taken'})
@@ -236,6 +237,7 @@ def get_json():
     thing = request.json.get('thing')
     return jsonify({'thing': thing})
 
+
 # Testing upload of multiple files in multipart form
 @app.route('/api/upload', methods=['POST'])
 def upload_file():
@@ -254,6 +256,46 @@ def upload_file():
         return jsonify({'status': 'success'})
     else:
         return jsonify({'status': 'failure'})
+
+
+# Testing upload of multiple files in multipart form
+@app.route('/book/add', methods=['POST'])
+@auth.login_required
+def add_book():
+
+    # if 1 or more files is missing
+    if 'photo_cover' not in request.files or 'photo_best' not in request.files or 'photo_worst' not in request.files or 'photo_average' not in request.files:
+        return jsonify({'status': 'failure', 'message': 'missing_photos'})
+
+    cover = request.files['photo_cover']
+    best = request.files['photo_best']
+    worst = request.files['photo_worst']
+    average = request.files['photo_average']
+
+    # if any of the files have disallowed extensions
+    if not allowedFile(cover.filename) or not allowedFile(best.filename) or not allowedFile(worst.filename) or not allowedFile(average.filename):
+        return jsonify({'status': 'failure', 'message': 'bad_extension'})
+
+    # Now we know files are good to go!
+
+    # get the form data (excluding files)
+    form = request.form.to_dict()              # get the form data (excluding files)
+
+    # print(file.filename, f2.filename)
+
+
+    # if allowedFile(file.filename) and allowedFile(f2.filename):
+    #     n1 = uniqueFileName(file.filename)
+    #     file.save(os.path.join(app.config['UPLOAD_FOLDER'], n1))
+    #     n2 = uniqueFileName(f2.filename)
+    #     f2.save(os.path.join(app.config['UPLOAD_FOLDER'], n2))
+    #
+    #     return jsonify({'status': 'success'})
+    # else:
+    #     return jsonify({'status': 'failure'})
+
+    return jsonify({'status': 'success'})
+
 
 
 

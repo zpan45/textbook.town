@@ -117,7 +117,7 @@
 $(function() {
 	//Chained rendering for nested items
 	Promise.resolve(render("#top", "tp/head.html", {title: "Sell a Book"})).then(
-    	render("#menu", "tp/menu.html", {auth_action: "#", auth_link: "Login"})
+    	menu()
 	);
 
 });
@@ -150,6 +150,8 @@ $(function() {
 			    }
 			    else{
 			        alert(res.message);
+              window.location.href = "dashboard.html";
+
 			    }
     		},
     		cache: false,

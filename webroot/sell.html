@@ -34,7 +34,7 @@
   <br>
   <span class="form-field">
           <label for="isbn">ISBN Number</label>
-          <input name="isbn" id="isbn" type="number" value="" size="40" aria-required="true">
+          <input name="isbn" id="isbn" type="text" value="" size="40" aria-required="true">
       </span>
   <br>
   <span class="form-field">
@@ -68,14 +68,19 @@
           <input name="rating" id="rating" type="range" value="50" min="0" max="100">
       </span>
   <br>
-  <span class="form-field">
-          <label for="sellby">Date of Auctions End</label>
-          <input name="sellby" id="sellby" type="date" aria-required="true">
+      <span class="form-field">
+          <label for="rating">The Best Page</label>
+          <input name="best" id="best" type="range" value="50" min="0" max="100">
+      </span>
+  <br>
+      <span class="form-field">
+          <label for="rating">The Worst Page</label>
+          <input name="worst" id="worst" type="range" value="50" min="0" max="100">
       </span>
   <br>
   <span class="form-field">
-          <label for="boughton">Date of Books Purchase</label>
-          <input name="boughton" id="boughton" type="date" aria-required="true">
+          <label for="sellby">Date of Auctions End</label>
+          <input name="sellby" id="sellby" type="date" aria-required="true">
       </span>
   <br>
   <span class="form-field">
@@ -114,33 +119,32 @@ $(function() {
 </script>
 
 <script type="text/javascript">
-// book form > json
-  	$.fn.serializeObject = function() {
-  	var o = {};
-  	var a = this.serializeArray();
-  	$.each(a, function() {
-    	if (o[this.name] !== undefined) {
-      		if (!o[this.name].push) {
-        		o[this.name] = [o[this.name]];
-      		}
-      		o[this.name].push(this.value || '');
-    	} else {
-      		o[this.name] = this.value || '';
-    	}
-  	});
-  	return o;
-	};
-
  // json to string on submit and post to dummy file
 	$(function() {
-  	$('form').submit(function() {
-    	var data ;
-    	data = JSON.stringify($('form').serializeObject());
+  	$('form#bookInfo').submit(function() {
+    	var formData = new FormData(this);
+    	token = getCookie(session);
+
+    	if (token == null){
+    	    alert("you are not logged in!");
+    	    return false;
+    	}
+
     	$.ajax({
-    		type: 'post',
-    		url: 'api/newBook.java',
-    		data: data,
-    		dataType: 'json'
+    		type: 'POST',
+    		url: 'http://127.0.0.1:5000/book/add',
+    		data: formData,
+    		async: false,
+    		beforeSend: function (xhr) {
+    		    xhr.setRequestHeader('Authorization', 'Basic ' + token);
+    		},
+    		success: function(){
+    		    alert('textbook added');
+    		},
+    		cache: false,
+    		contentType: false,
+    		processData: false
+
     	});
     	return false;
   	});

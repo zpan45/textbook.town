@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+<body onload="killCookie()">
+</body>
+<script>
+function killCookie(){
+	setCookie("session", "DEAD", -10);
+	redirect();
+}
+function redirect(){
+	window.location = "index.html"
+}
+</script>
+</html>

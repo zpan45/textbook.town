@@ -9,6 +9,9 @@ from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSign
 from werkzeug.utils import secure_filename
 import uuid
 
+# Database login information -- uses pymysql as connector -- '://user:password@host/database'
+DATABASE_LOGIN_STRING = 'mysql+pymysql://root:glhsauce@localhost/elixir'
+
 SERVER = 'http://127.0.0.1:5000/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])     # allowed file extensions
 UPLOAD_FOLDER = os.path.abspath('./img')                    # folder to store uploaded files
@@ -17,9 +20,7 @@ TOKEN_EXPIRATION = 604800
 # Initialize our Flask app
 app = Flask(__name__, static_folder=os.path.abspath('./img'))
 app.config['SECRET_KEY'] = 'the quick brown fox jumps over the lazy dog'
-
-# Database login information -- uses pymysql as connector -- '://user:password@host/database'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:glhsauce@localhost/elixir'
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_LOGIN_STRING
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER

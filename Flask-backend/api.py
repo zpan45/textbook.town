@@ -2,6 +2,7 @@
 
 import os
 from flask import Flask, abort, request, jsonify, g, url_for, send_from_directory
+from flask_cors import CORS, cross_origin
 from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth
 from passlib.apps import custom_app_context as pwd_context
@@ -26,6 +27,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Initialize database and authentication extension objects
 db = SQLAlchemy(app)
+CORS(app)
 auth = HTTPBasicAuth()
 
 
@@ -147,9 +149,9 @@ def new_user():
     :return: {'status': 'success'} or {'status': 'failure', 'message': 'username_taken'} or 400 if missing arguments
     '''
     username = request.json.get('username').lower()
-    password1 = request.json.get('password1')
-    password2 = request.json.get('password2')
-    contact = request.json.get('contact')
+    password1 = request.json.get('password')
+    password2 = request.json.get('passwordCheck')
+    contact = request.json.get('contactLink')
 
     # VALIDATE INPUT
     if username is None or password1 is None or password2 is None or contact is None:
@@ -262,6 +264,10 @@ def upload_file():
 @app.route('/book/add', methods=['POST'])
 @auth.login_required
 def add_book():
+    '''
+    Server-side functionality for adding a textbook
+    :return:
+    '''
 
     # if 1 or more files is missing
     if 'photo_cover' not in request.files or 'photo_best' not in request.files or 'photo_worst' not in request.files or 'photo_average' not in request.files:
@@ -281,6 +287,23 @@ def add_book():
     # get the form data (excluding files)
     form = request.form.to_dict()              # get the form data (excluding files)
 
+    # get String variables from the form
+    title = form['title']
+    author = form['author']
+    version = form['version']
+    desc = form['desc']
+    publisher = form['publisher']
+    isbn = form['isbn']
+    course = form['subject']
+
+    if title=="" or author=="" or version=="" or desc=="" or publisher=="" or isbn=="" or course =="":
+        pass
+
+
+
+    user = g.user
+    print(user.username)
+
     # print(file.filename, f2.filename)
 
 
@@ -295,6 +318,17 @@ def add_book():
     #     return jsonify({'status': 'failure'})
 
     return jsonify({'status': 'success'})
+
+
+@app.route('/login/check', methods=['POST'])
+def valid_token():
+    token = request.json.get('token')
+    try:
+        User.verify_auth_token(token)
+    except:
+        return jsonify({'status': 'failure'})
+    return jsonify({'status': 'success'})
+
 
 
 

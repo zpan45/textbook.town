@@ -21,11 +21,20 @@
 		<link href="https://fonts.googleapis.com/css?family=Josefin+Sans:100,100i,300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
 
 </head>
-<body>
+<body style="background-color:#C5494C;">
 
-	<!-- Menu and Top Section Container -->
-	<div id="top"></div>
-	<iframe src="tp/userRegistration.html" frameborder='0' width='100%' height='300'></iframe>
+	<div style="background-color:#C5494C;padding-top:75px;"></div>
+	<div>
+		<span><a href="index.html"><img src="img/home.png" style="height:45px" align="right"></a></span>
+		<span><img src="img/logo.png" style="height:65px" align="left"></span>
+	</div>
+	<br>
+	<center>
+		<div style="width:500px;height:200px;margin-top:5%;background-color:blue;">
+			<iframe src="tp/userRegistration.html" frameborder='0' width='290%' height='200' allowtransparency="true" style="width:100%;height:100%;background: #FFFFFF"></iframe>
+		</div>
+	</center>
+
 
 </body>
 
@@ -36,7 +45,7 @@
 //
 $(function() {
 	//Chained rendering for nested items
-	Promise.resolve(render("#top", "tp/head.html", {title: "Find the Perfect Textbook:"})).then(
+	Promise.resolve(render("#top", "tp/head.html", {title: "Register"})).then(
     	render("#menu", "tp/menu.html", {auth_action: "#", auth_link: "Login"})
 	);
 
@@ -44,30 +53,48 @@ $(function() {
 </script>
 
 <script>
+
+// login form > json
+  	$.fn.serializeObject = function() {
+  	var o = {};
+  	var a = this.serializeArray();
+  	$.each(a, function() {
+    	if (o[this.name] !== undefined) {
+      		if (!o[this.name].push) {
+        		o[this.name] = [o[this.name]];
+      		}
+      		o[this.name].push(this.value || '');
+    	} else {
+      		o[this.name] = this.value || '';
+    	}
+  	});
+  	return o;
+	};
+
+
 // json to string on submit and post to dummy file
  $(function() {
    $('form').submit(function() {
      var data ;
      data = JSON.stringify($('form').serializeObject());
      $.ajax({
-       type: 'register',
-       url: 'api/newUser.java',
+       type: 'login',
+       url: 'api/knownUser.java',
        data: data,
        dataType: 'json'
      });
      return false;
    });
 });
-
-function setCookie(cname, cvalue, exdays){
+$(function setCookie(cname, cvalue, exdays){
 			var d = new Date();
 			d.setTime(d.getTime() + (exdays*24*60*60*1000));
 			var expires = "expires="+ d.toUTCString();
 			document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-		}
+		});
 		////
 		//Fetch cookie by name
-		function getCookie(cname) {
+		$(function getCookie(cname) {
 			var name = cname + "=";
 			var decodedCookie = decodeURIComponent(document.cookie);
 			var ca = decodedCookie.split(';');
@@ -81,6 +108,7 @@ function setCookie(cname, cvalue, exdays){
 				}
 			}
 			return "";
-		}
+		});
 </script>
+
 </html>

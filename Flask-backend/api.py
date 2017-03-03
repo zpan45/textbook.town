@@ -30,7 +30,7 @@ CORS(app)
 auth = HTTPBasicAuth()
 
 # import helper functions from validate.py
-from validate import validPubYear, stringToDate, validDateString, validMinimumBid, validPercent
+from validate import validPubYear, stringToDate, validDateString, validMinimumBid
 
 
 ###### DEFINE THE DATA MODELS ######
@@ -226,20 +226,16 @@ def add_book():
 
     print(request.files)
 
-    # if 1 or more files is missing
-    if 'cover' not in request.files or 'pic1' not in request.files or 'pic2' not in request.files or 'pic3' not in request.files:
-        print("Files missing")
-        return jsonify({'status': 'failure', 'message': 'missing_photos'})
-
     cover = request.files['cover']
     best = request.files['pic1']
     worst = request.files['pic2']
     average = request.files['pic3']
 
-    # if any of the files have disallowed extensions
+    print(average)
+
+    # if any of the files are missing or have disallowed extensions
     if not allowedFile(cover.filename) or not allowedFile(best.filename) or not allowedFile(worst.filename) or not allowedFile(average.filename):
-        print("bad file extension")
-        return jsonify({'status': 'failure', 'message': 'bad_file_extension'})
+        return jsonify({'status': 'failure', 'message': 'Missing photos or improper photo extensions'})
 
     # Now we know files are good to go!
 
@@ -259,37 +255,30 @@ def add_book():
     ratingStr = form['rating']
     dateStr = form['sellby']
 
-
-    print(dateStr, ratingStr)
-
-    # if any of these fields are blank
+    # if any of these fields are blank, return blank_fields json
     if title=="" or isbn=="" or author=="" or publisher=="" or version=="" or minimumBidStr=="" or course=="" \
     or pubYearStr=="" or ratingStr=="" or minimumBidStr=="" or dateStr=="":
-        return jsonify({'status': 'failure', 'message': 'blank_fields'})
+        return jsonify({'status': 'failure', 'message': 'All form fields must be filled out'})
 
     # validate year published
     if validPubYear(pubYearStr):
         pubYear = int(pubYearStr)
     else:
-        return jsonify({'status': 'failure', 'message': 'invalid_pub_year'})
+        return jsonify({'status': 'failure', 'message': 'Year published must be between 1900 and 2017'})
 
     # validate closingDate
     if validDateString(dateStr):
         closingDate = stringToDate(dateStr)
     else:
-        return jsonify({'status': 'failure', 'message': 'invalid_date_closing'})
+        return jsonify({'status': 'failure', 'message': 'Auction must close between tomorrow and 60 days from now'})
 
-    # validate rating
-    if validPercent(ratingStr):
-        rating = int(ratingStr)
-    else:
-        return jsonify({'status': 'failure', 'message': 'invalid_rating'})
+    rating = int(ratingStr)
 
     # validate minimumBid
     if validMinimumBid(minimumBidStr):
         minimumBid = int(minimumBidStr)
     else:
-        return jsonify({'status': 'failure', 'message': 'invalid_starting_price'})
+        return jsonify({'status': 'failure', 'message': 'Minimum bid must be a positive integer'})
 
     # Yay now we know everything is valid!
     # CREATE UNIQUE FILENAMES AND STORE

@@ -31,7 +31,7 @@ def getCurrentESTDate():
 
 def validDateString(string):
     '''
-    Date must be a valid date string and must be tomorrow or later
+    Date must be a valid date string and must be between tomorrow and 60 days
     :param string:
     :return:
     '''
@@ -40,7 +40,7 @@ def validDateString(string):
     except ValueError:
         return False
 
-    return d > getCurrentESTDate()
+    return getCurrentESTDate() < d < getCurrentESTDate() + datetime.timedelta(days=60)
 
 
 def stringToDate(string):
@@ -50,20 +50,6 @@ def stringToDate(string):
     :return: date object
     '''
     return datetime.datetime.strptime(string, '%Y-%m-%d').date()
-
-
-def validPercent(string):
-    '''
-    Validate integer between 0 and 100
-    :param string: Number to validate as a string
-    :return: True or False
-    '''
-    try:
-        p = int(string)
-    except ValueError:
-        return False
-
-    return 0 <= p <= 100
 
 
 def validMinimumBid(bid):

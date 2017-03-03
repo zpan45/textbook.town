@@ -23,7 +23,8 @@
 		<link href="https://fonts.googleapis.com/css?family=Josefin+Sans:100,100i,300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
 
 </head>
-<body>
+
+<body style="display:none;background-color:#C5494C;">
 
 	<!-- Splash Section -->
 	<div id="head" style="background-color:#C4494D;">
@@ -43,9 +44,11 @@
     </div>
 
     <!-- Info Section Two -->
-	<div style="background-color:#D74C4D;padding:50px;padding-top:0px;">
+	<div style="background-color:#C5494C;padding:50px;padding-top:0px;">
    		<div id="sell"></div>
    	</div>
+
+   	<div id="footer"></div>
 
 </body>
 
@@ -55,6 +58,8 @@
 // Page Render
 //
 $(function() {
+
+	$("body").fadeIn(250);
 
 	//Render Splash
 	render("#menu", "tp/menu.html", {auth_action: "#", auth_link: "Login"})
@@ -78,34 +83,34 @@ $(function() {
 	});
 
 	//Render search book section
-    render("#search", "tp/twoPane.html", {title: "Find a Book"});
+    render("#search", "tp/searchDemo.html", {
+    	title: "Find a Book", 
+    	img:'img/books.png', 
+    });
 
     //Render Sell book section
     render("#sell", "tp/onePane.html", {
     	title: "Sell your Book", 
     	t_bg:"#FFFFFF", 
-    	t_c: "#D64C4E",  
+    	t_c: "#C5494C",  
     	img: "img/book_money.png", 
     	side: 
-    		`Unlock your<br> 
-    		textbooks<br> 
-    		value.<br> 
-    		SELL
+    		`
+    		Unlock your<br> 
+    		textbooks'<br> 
+    		value.<br>
+    		`,
+    	side_2:
+    		`
+    		<a href="#" style='text-decoration:none;'><span class="motion_button">Sell Now</span></a>
+
     		`
     });
 
-
-
-
-
-
-
-
+    //Footer Render
+    render("#footer", "tp/foot.html")
 
 });
-
-
-
 
 </script>
 </html>

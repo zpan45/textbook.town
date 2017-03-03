@@ -1,3 +1,6 @@
+h1{
+	line-height: 1.2em;
+}
 #head{
 	padding-left: 5%;
 	padding-right: 5%;
@@ -34,4 +37,18 @@ h3{
 	display:inline-block;
 	padding:5px;
 	margin-bottom:60px;
+}
+.motion_button{
+	border-radius: 50px;
+	font-size:20px;
+	padding:15px;
+	padding-left: 50px;
+	padding-right: 50px;
+	background-color: #13212B;
+	color:#FFFFFF;
+}
+.motion_botton:hover{
+	background-color: #FFFFFF;
+	color:#13212B;
+	cursor:pointer;
 }

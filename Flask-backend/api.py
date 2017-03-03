@@ -31,7 +31,10 @@ CORS(app)
 auth = HTTPBasicAuth()
 
 
+from validate import validPubYear
+
 ###### DEFINE THE DATA MODELS ######
+
 
 
 
@@ -146,7 +149,7 @@ def verify_password(username_or_token, password):
 def new_user():
     '''
     User account signup backend endpoint at SERVER/user/register
-    :return: {'status': 'success'} or {'status': 'failure', 'message': 'username_taken'} or 400 if missing arguments
+    :return: {'status': 'success'} or {'status': 'failure', 'message': 'message'} or 400 if missing arguments
     '''
     username = request.json.get('username').lower()
     password1 = request.json.get('password')
@@ -297,7 +300,27 @@ def add_book():
     course = form['subject']
 
     if title=="" or author=="" or version=="" or desc=="" or publisher=="" or isbn=="" or course =="":
-        pass
+        return jsonify({'status': 'failure', 'message': 'blank_fields'})
+
+    # get other String variables that will have to be converted into ints or dates
+    pubYear = form['pub_year']
+    rating = form['rating']
+    minimumBid = form['starting_price']
+    bestPercent = form['best_page_percent']
+    worstPercent = form['worst_page_percent']
+    closingDate = form['date_closing']
+
+
+
+    if validPubYear(pubYear):
+        pub_int = int(pubYear)
+    else:
+        return jsonify({'status': 'failure', 'message': 'invalid_pub_year'})
+
+
+
+
+
 
 
 
@@ -322,10 +345,15 @@ def add_book():
 
 @app.route('/login/check', methods=['POST'])
 def valid_token():
+    '''
+    For frontend to check if user is logged in or not
+    :return: {'status': 'successs'} if logged in or {'status': 'failure'} if not
+    '''
+    # get token from POST json body
     token = request.json.get('token')
-    try:
-        User.verify_auth_token(token)
-    except:
+    # get user with that token, if there is one
+    user = User.verify_auth_token(token)
+    if user is None:
         return jsonify({'status': 'failure'})
     return jsonify({'status': 'success'})
 

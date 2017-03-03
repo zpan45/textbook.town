@@ -45,3 +45,33 @@ function getCookie(cname) {
 	}
 	return "";
 }
+
+function isAuth(){
+
+	//Get Token
+	token = getCookie("session");
+
+	//If unset
+	if (token == null){
+	    return false;
+	}
+
+	$.ajax({
+		type: 'POST',
+		url: 'http://127.0.0.1:5000/login/check',
+		data: "{'token': "+token+"}",
+		contentType:"application/json",
+		dataType: 'json',
+		success: function(res){
+		    if(res.status == 'success'){
+			    return true;
+		    }
+		    else{
+		        return false;
+		    }
+		}
+	});
+
+
+
+}

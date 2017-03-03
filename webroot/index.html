@@ -61,8 +61,17 @@ $(function() {
 
 	$("body").fadeIn(250);
 
+	//Render Menu
+	if(isAuth()){
+		render("#menu", "tp/menu.html", {auth_action: "logout.html", auth_link: "Logout"})
+	}
+	else{
+		render("#menu", "tp/menu.html", {auth_action: "#", auth_link: "Login"})
+	}
+	
+
+
 	//Render Splash
-	render("#menu", "tp/menu.html", {auth_action: "#", auth_link: "Login"})
 	render("#splash", "tp/indexSplash.html")
 
 	//Render Process Section

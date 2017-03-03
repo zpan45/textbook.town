@@ -1,35 +1,36 @@
-<form id = "userInfo" action = "" method = "register">
-  <span class="form-field">
-    <label for="email">Email Address:</label>
-    <input name="email" id="email" type="text" value="" size="40" aria-required="true">
-  </span>
+<center>
+<form id = "userInfo" action = "" method = "POST">
   <br>
   <span class="form-field">
     <label for="username">Username:</label>
-    <input name="username" id="username" type="text" value="" size="40" aria-required="true">
+    <input name="username" id="username" type="text" value="" size="40" placeholder ="New username" aria-required="true">
   </span>
   <br>
   <span class="form-field">
     <label for="password">Password:</label>
-    <input name="password" id="password" type="text" value="" size="40" aria-required="true">Note: Password must be greater than 5 characters.
+    <input name="password" id="password" type="password" pattern=".{6,32}" required title="Min 6 and max 32 characters required" onchange="this.setCustomValidity(this.validity.patternMismatch ? 'Must have at least 6 characters' : ''); if(this.checkValidity()) form.passwordCheck.pattern = this.value;" placeholder="Password" value="" size="40" aria-required="true">
   </span>
+  <br>
+  Note: Password must be 6 to 32 characters.
   <br>
   <span class="form-field">
-    <label for="passwordCheck">Re-enter Password:</label>
-    <input name="passwordCheck" id="passwordCheck" type="text" value="" size="40" aria-required="true">
+    <label for="passwordCheck">Confirm Password:</label>
+    <input name="passwordCheck" id="passwordCheck" type="password" pattern=".{6,32}" required title="Min6 and max 32 characters required" onchange="this.setCustomValidity(this.validity.patternMismatch ? 'Please enter the same Password as above' : '');" placeholder="Verify Password" value="" size="40" aria-required="true">
   </span>
   <br>
+  <!-- Could be used in Stage 3
   <p>
     Upload a profile photo (optional)
     <input type="file" name="profilePhoto">
   </p>
-  <br>
+  -->
   <span class="form-field">
-    <label for="contactLink">Link to Facebook Messenger:</label>
-    <input name="contactLink" id="contactLink" type="text" value="" size="40" aria-required="true">
+    <label for="contactLink">Contact via link by Facebook Messenger or Email </label>
+    <input name="contactLink" id="contactLink" type="text" placeholder="Facebook link or E-mail" value="" size="40" aria-required="true">
   </span>
   <br>
     <p class="submit">
     <input type="submit" name="register" id="register" class="button" value="Click to Register!">
   </p>
 </form>
+</center>

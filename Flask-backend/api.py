@@ -31,7 +31,7 @@ CORS(app)
 auth = HTTPBasicAuth()
 
 
-from validate import validPubYear, stringToDate, validDateString
+from validate import validPubYear, stringToDate, validDateString, validMinimumBid, validPercent
 
 ###### DEFINE THE DATA MODELS ######
 
@@ -226,13 +226,6 @@ def serve_file(filename):
 
 
 
-# Simple test endpoint that requires login
-@app.route('/api/resource')
-@auth.login_required
-def get_resource():
-    return jsonify({'data': 'Hello, %s!' % g.user.username})
-
-
 # Testing login required endpoint
 @app.route('/api/json', methods=['POST'])
 @auth.login_required
@@ -263,7 +256,7 @@ def upload_file():
         return jsonify({'status': 'failure'})
 
 
-# Testing upload of multiple files in multipart form
+
 @app.route('/book/add', methods=['POST'])
 @auth.login_required
 def add_book():
@@ -283,7 +276,7 @@ def add_book():
 
     # if any of the files have disallowed extensions
     if not allowedFile(cover.filename) or not allowedFile(best.filename) or not allowedFile(worst.filename) or not allowedFile(average.filename):
-        return jsonify({'status': 'failure', 'message': 'bad_extension'})
+        return jsonify({'status': 'failure', 'message': 'bad_file_extension'})
 
     # Now we know files are good to go!
 
@@ -304,16 +297,19 @@ def add_book():
 
     # get other String variables that will have to be converted into ints or dates
     pubYearStr = form['pub_year']
-    # ratingStr = form['rating']
-    # minimumBidStr = form['starting_price']
-    # bestPercentStr = form['best_page_percent']
-    # worstPercentStr = form['worst_page_percent']
+    ratingStr = form['rating']
+    minimumBidStr = form['starting_price']
+    bestPercentStr = form['best_page_percent']
+    worstPercentStr = form['worst_page_percent']
     dateStr = form['date_closing']
+
+    if pubYearStr=="" or ratingStr=="" or minimumBidStr=="" or bestPercentStr=="" or worstPercentStr=="" or dateStr=="":
+        return jsonify({'status': 'failure', 'message': 'blank_fields'})
 
 
     # validate year published
     if validPubYear(pubYearStr):
-        pub_int = int(pubYearStr)
+        pubYear = int(pubYearStr)
     else:
         return jsonify({'status': 'failure', 'message': 'invalid_pub_year'})
 
@@ -323,10 +319,31 @@ def add_book():
     else:
         return jsonify({'status': 'failure', 'message': 'invalid_date_closing'})
 
+    # validate rating
+    if validPercent(ratingStr):
+        rating = int(ratingStr)
+    else:
+        return jsonify({'status': 'failure', 'message': 'invalid_rating'})
 
+    # validate bestPercent
+    if validPercent(bestPercentStr):
+        bestPercent = int(bestPercentStr)
+    else:
+        return jsonify({'status': 'failure', 'message': 'invalid_best_page_percent'})
 
+    # validate worstPercent
+    if validPercent(worstPercentStr):
+        worstPercent = int(worstPercentStr)
+    else:
+        return jsonify({'status': 'failure', 'message': 'invalid_worst_page_percent'})
 
+    # validate minimumBid
+    if validMinimumBid(minimumBidStr):
+        minimumBid = int(minimumBidStr)
+    else:
+        return jsonify({'status': 'failure', 'message': 'invalid_starting_price'})
 
+    print(pubYear, closingDate, rating, bestPercent, worstPercent, minimumBid)
 
 
 
@@ -335,6 +352,9 @@ def add_book():
 
     # print(file.filename, f2.filename)
 
+
+
+    # CREATE UNIQUE FILENAMES AND STORE
 
     # if allowedFile(file.filename) and allowedFile(f2.filename):
     #     n1 = uniqueFileName(file.filename)
@@ -368,7 +388,7 @@ def valid_token():
 
 
 ###### HELPER METHODS FOR APP ROUTES ######
-
+# Can't seem to put these in a separate file, getting some weird circular imports or something
 
 
 def allowedFile(filename):

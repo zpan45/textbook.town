@@ -6,7 +6,7 @@ UTC_TIME_ADJUSTMENT = 5             # will have to change when daylight savings 
 
 def validPubYear(year):
     '''
-    Determines whether or not a year string is valid (Between 0 and 2017)
+    Determines whether or not a year string is valid and between 1900 and 2017
     :param year: year in string format
     :return: True if valid, False otherwise
     '''
@@ -22,27 +22,60 @@ def validPubYear(year):
 
 
 def getCurrentESTDate():
+    '''
+    :return: current date in EST (depends on the UTC_TIME_ADJUSTMENT being correct for daylight savings time)
+    '''
     d = datetime.datetime.utcnow() - datetime.timedelta(hours=UTC_TIME_ADJUSTMENT)
     return d.date()
 
 
-def validDateString(str):
+def validDateString(string):
     '''
     Date must be a valid date string and must be tomorrow or later
-    :param str:
+    :param string:
     :return:
     '''
     try:
-        d = stringToDate(str)
+        d = stringToDate(string)
     except ValueError:
         return False
 
-    if d <= getCurrentESTDate():
+    return d > getCurrentESTDate()
+
+
+def stringToDate(string):
+    '''
+    Converts dateString 'yyyy-mm-dd' to a date object
+    :param string: string to convert to date
+    :return: date object
+    '''
+    return datetime.datetime.strptime(string, '%Y-%m-%d').date()
+
+
+def validPercent(string):
+    '''
+    Validate integer between 0 and 100
+    :param string: Number to validate as a string
+    :return: True or False
+    '''
+    try:
+        p = int(string)
+    except ValueError:
         return False
 
-    return True
+    return 0 <= p <= 100
 
 
-def stringToDate(str):
-    return datetime.datetime.strptime(str, '%Y-%m-%d').date()
+def validMinimumBid(bid):
+    '''
+    Minimum bid must be a positive integer
+    :param bid: minimumBid as a string
+    :return: True or False
+    '''
+    try:
+        b = int(bid)
+    except ValueError:
+        return False
+
+    return b > 0
 

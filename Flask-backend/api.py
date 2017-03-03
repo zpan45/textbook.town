@@ -225,14 +225,10 @@ def add_book():
     :return: JSON {'status': 'success', 'id': newBook.id} or {'status': 'failure'}
     '''
 
-    print(request.files)
-
     cover = request.files['cover']
     best = request.files['pic1']
     worst = request.files['pic2']
     average = request.files['pic3']
-
-    print(average)
 
     # if any of the files are missing or have disallowed extensions
     if not allowedFile(cover.filename) or not allowedFile(best.filename) or not allowedFile(worst.filename) or not allowedFile(average.filename):

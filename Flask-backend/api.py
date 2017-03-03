@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import os
 from flask import Flask, abort, request, jsonify, g, url_for, send_from_directory
 from flask_cors import CORS, cross_origin
@@ -10,9 +9,9 @@ from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSign
 from werkzeug.utils import secure_filename
 import uuid
 
-
+SERVER = 'http://127.0.0.1:5000/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])     # allowed file extensions
-UPLOAD_FOLDER = os.path.abspath('./img')
+UPLOAD_FOLDER = os.path.abspath('./img')                    # folder to store uploaded files
 TOKEN_EXPIRATION = 604800
 
 # Initialize our Flask app
@@ -30,14 +29,11 @@ db = SQLAlchemy(app)
 CORS(app)
 auth = HTTPBasicAuth()
 
-
+# import helper functions from validate.py
 from validate import validPubYear, stringToDate, validDateString, validMinimumBid, validPercent
 
+
 ###### DEFINE THE DATA MODELS ######
-
-
-
-
 class User(db.Model):
     '''
     Models user
@@ -122,9 +118,6 @@ class Auction(db.Model):
 
 
 ###### APP ROUTES (API ENDPOINTS) ######
-
-
-
 @auth.verify_password
 def verify_password(username_or_token, password):
     '''
@@ -158,6 +151,9 @@ def new_user():
 
     # VALIDATE INPUT
     if username is None or password1 is None or password2 is None or contact is None:
+        return jsonify({'status': 'failure', 'message': 'missing_arguments'})
+
+    if contact=="":
         return jsonify({'status': 'failure', 'message': 'missing_arguments'})
 
     # verify username isn't too short or too long
@@ -221,48 +217,12 @@ def serve_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
 
 
-
-###### TEST ENDPOINTS FOR PRACTICE #######
-
-
-
-# Testing login required endpoint
-@app.route('/api/json', methods=['POST'])
-@auth.login_required
-def get_json():
-    print('thing' in request.json)
-    print(g.user.username)
-    thing = request.json.get('thing')
-    return jsonify({'thing': thing})
-
-
-# Testing upload of multiple files in multipart form
-@app.route('/api/upload', methods=['POST'])
-def upload_file():
-    file = request.files['this']            # request.files is a dictionary with files from form
-    f2 = request.files['that']
-    d = request.form.to_dict()              # get the form data (excluding files)
-
-    # print(file.filename, f2.filename)
-
-    if allowedFile(file.filename) and allowedFile(f2.filename):
-        n1 = uniqueFileName(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], n1))
-        n2 = uniqueFileName(f2.filename)
-        f2.save(os.path.join(app.config['UPLOAD_FOLDER'], n2))
-
-        return jsonify({'status': 'success'})
-    else:
-        return jsonify({'status': 'failure'})
-
-
-
 @app.route('/book/add', methods=['POST'])
 @auth.login_required
 def add_book():
     '''
     Server-side functionality for adding a textbook
-    :return:
+    :return: JSON {'status': 'success', 'id': newBook.id} or {'status': 'failure'}
     '''
 
     # if 1 or more files is missing
@@ -292,6 +252,7 @@ def add_book():
     isbn = form['isbn']
     course = form['subject']
 
+    # if any of these fields are blank
     if title=="" or author=="" or version=="" or desc=="" or publisher=="" or isbn=="" or course =="":
         return jsonify({'status': 'failure', 'message': 'blank_fields'})
 
@@ -303,9 +264,9 @@ def add_book():
     worstPercentStr = form['worst_page_percent']
     dateStr = form['date_closing']
 
+    #if any of these fields are blank
     if pubYearStr=="" or ratingStr=="" or minimumBidStr=="" or bestPercentStr=="" or worstPercentStr=="" or dateStr=="":
         return jsonify({'status': 'failure', 'message': 'blank_fields'})
-
 
     # validate year published
     if validPubYear(pubYearStr):
@@ -343,15 +304,8 @@ def add_book():
     else:
         return jsonify({'status': 'failure', 'message': 'invalid_starting_price'})
 
-    print(pubYear, closingDate, rating, bestPercent, worstPercent, minimumBid)
-
-
     # Yay now we know everything is valid!
-
-
-
     # CREATE UNIQUE FILENAMES AND STORE
-
     coverPath = uniqueFileName(cover.filename)
     cover.save(os.path.join(app.config['UPLOAD_FOLDER'], coverPath))
     bestPath = uniqueFileName(best.filename)
@@ -361,9 +315,8 @@ def add_book():
     averagePath = uniqueFileName(average.filename)
     average.save(os.path.join(app.config['UPLOAD_FOLDER'], averagePath))
 
-
+    # get current logged in user who is selling book
     seller = g.user.id
-    print(seller)
 
     # Create Textbook object with all info except auction id
     newBook = Textbook(title=title, author=author, isbn=isbn, publisher=publisher, description=desc, version=version,
@@ -374,43 +327,26 @@ def add_book():
     # Create Auction object with all info except textbook id
     newAuction = Auction(minimumBid=minimumBid, salePrice=0, isCurrent=True, closingDate=closingDate)
 
-    # add our new objects
+    # add our new objects to database
     db.session.add(newAuction)
     db.session.add(newBook)
     # flush to update db so we can get their ids
     db.session.flush()
 
-    # update auction id of textbook and textbook id of auction
+    # update auction id of textbook and textbook id of auction and commit changes
     newBook.auction = newAuction.id
     newAuction.textbook = newBook.id
-    # commit!
     db.session.commit()
 
-    # textbook = db.Column(db.Integer)                 # id of the textbook for this auction
-    # minimumBid = db.Column(db.Integer)               # minimum bid
-    # salePrice = db.Column(db.Integer)                # sale price, updated each time a bid comes in, starts at 0 if no bids
-    # isCurrent = db.Column(db.Boolean)                # whether or not auction is open
-    # closingDate = db.Column(db.Date)
-
-
-    # if allowedFile(file.filename) and allowedFile(f2.filename):
-    #     n1 = uniqueFileName(file.filename)
-    #     file.save(os.path.join(app.config['UPLOAD_FOLDER'], n1))
-    #     n2 = uniqueFileName(f2.filename)
-    #     f2.save(os.path.join(app.config['UPLOAD_FOLDER'], n2))
-    #
-    #     return jsonify({'status': 'success'})
-    # else:
-    #     return jsonify({'status': 'failure'})
-
-    return jsonify({'status': 'success'})
+    # return successful response
+    return jsonify({'status': 'success', 'id': newBook.id})
 
 
 @app.route('/login/check', methods=['POST'])
 def valid_token():
     '''
-    For frontend to check if user is logged in or not
-    :return: {'status': 'successs'} if logged in or {'status': 'failure'} if not
+    For frontend to check if user is logged in or not by checking token validity
+    :return: {'status': 'success'} if logged in or {'status': 'failure'} if not
     '''
     # get token from POST json body
     token = request.json.get('token')
@@ -421,7 +357,16 @@ def valid_token():
     return jsonify({'status': 'success'})
 
 
+###### TEST ENDPOINTS FOR PRACTICE #######
 
+# Testing login required endpoint
+@app.route('/api/json', methods=['POST'])
+@auth.login_required
+def get_json():
+    print('thing' in request.json)
+    print(g.user.username)
+    thing = request.json.get('thing')
+    return jsonify({'thing': thing})
 
 
 ###### HELPER METHODS FOR APP ROUTES ######
@@ -450,12 +395,6 @@ def uniqueFileName(filename):
     while os.path.isfile(os.path.join(app.config['UPLOAD_FOLDER'], filename)):
         filename = secure_filename(str(uuid.uuid4()) + filename[-4:])
     return filename
-
-# Not using this right now
-# def fileSize(file):
-#     file.seek(0, os.SEEK_END)
-#     return file.tell()
-
 
 
 if __name__ == '__main__':

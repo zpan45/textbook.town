@@ -106,40 +106,27 @@ $(function() {
 	data = JSON.stringify($('form').serializeObject());
 	data = JSON.parse(data);
 
+	//Send call
 	$.ajax({
 		type: 'GET',
-		url: 'http://'+JSON.stringify(data).username+':'+data.password+'@localhost/user/login',
+		url: 'http://'+data.username+':'+data.password+'@localhost/user/login',
 		success: function(res){
-			alert(res);
+			
+			//Parse reply data
+			res = JSON.parse(res);
+			if(res.status == 'success'){
+
+				//Set token cookie
+				setCookie("session", res.token, res.duration);
+				window.location.replace("dashboard.html");
+			}
+
 		} 
 	});
 
    });
 });
 
-$(function setCookie(cname, cvalue, exdays){
-			var d = new Date();
-			d.setTime(d.getTime() + (exdays*24*60*60*1000));
-			var expires = "expires="+ d.toUTCString();
-			document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-		});
-		////
-		//Fetch cookie by name
-		$(function getCookie(cname) {
-			var name = cname + "=";
-			var decodedCookie = decodeURIComponent(document.cookie);
-			var ca = decodedCookie.split(';');
-			for(var i = 0; i <ca.length; i++) {
-				var c = ca[i];
-				while (c.charAt(0) == ' ') {
-					c = c.substring(1);
-				}
-				if (c.indexOf(name) == 0) {
-					return c.substring(name.length, c.length);
-				}
-			}
-			return "";
-		});
 </script>
 
 </html>

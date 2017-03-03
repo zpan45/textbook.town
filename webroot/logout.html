@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<script src="js/mustache.min.js"></script>
+	<script src="js/core.js"></script>
+
+	<!-- JS Lib -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+</head>
+<body onload="killCookie()">
+</body>
+<script>
+function killCookie(){
+	setCookie("session", "DEAD", -10);
+	redirect();
+}
+function redirect(){
+	window.location = "index.html"
+}
+</script>
+</html>

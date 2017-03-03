@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<!-- Page Wide Settings -->
+<head>
+
+	<!-- Page Title -->
+	<title>Textbook Town - Dashboard</title>
+	
+	<!-- Import JS/CSS System Wide Libs -->
+	<!-- Required Global Libs | Full List Maintained in: components/head.html, however HTML import does not exist right now so we need to copy paste, nick researched this for 2 hours with Mark. -->
+		<!-- JS -->
+		<script src="js/mustache.min.js"></script>
+		<script src="js/core.js"></script>
+
+		<!-- JS Lib -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+		<!-- CSS -->
+		<link rel="stylesheet" type="text/css" href="css/core.css">
+
+		<!-- FONT --><!-- TODO: reduce font weight use before production. -->
+		<link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Josefin+Sans:100,100i,300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
+
+</head>
+
+
+
+
+<!-- Client Facing Content-->
+<body>
+
+	<!-- Menu and Top Section Container -->
+	<div id="top"></div>
+
+	<!-- Search Bar -->
+	<div id="sbar"></div>
+
+	<!-- Display Books -->
+	<div id="bookList">
+	</div>
+	
+
+</body>
+</html>
+
+
+
+
+<!-- Page Client Side Functionality -->
+<script type="text/javascript">
+
+////
+// Page Render 
+//
+$(function() {
+
+	//Chained rendering for nested items
+	Promise.resolve(render("#top", "tp/head.html", {title: "Find the Perfect Textbook:"})).then(
+    	menu()
+	);
+
+	//Render search bar
+	render("#sbar", "tp/searchbar.html")
+
+
+	//Summon books data with AJAX call for default render.
+	$.ajax({
+		url: 'api/bookList.java',
+		dataType: 'json',
+		success: function(data){
+			//On AJAX success loop over and render results
+			renderBookList(data.books);
+		}
+	});
+
+
+
+
+
+});
+
+
+
+
+</script>
+
+<!-- Page Action Functions -->
+<script type="text/javascript">
+
+	////
+	// SEARCH
+
+	//On key press event for search bar LISTENER
+	function searchBarListener(e) {
+	    if (e.keyCode == 13) {
+	        submitSearch();
+	        return false;
+	    }
+	}
+
+	//On Search Function ACTION.
+	function submitSearch(){
+		query = $('#search_bar_main').val();
+		$.get('api/bookList.java?q=' + query, function(res){
+			res = $.parseJSON(res)
+			renderBookList(res.books);
+		});
+	}
+
+</script>
+
+<script type="text/javascript">
+// book form > json
+  	$.fn.serializeObject = function() {
+  	var o = {};
+  	var a = this.serializeArray();
+  	$.each(a, function() {
+    	if (o[this.name] !== undefined) {
+      		if (!o[this.name].push) {
+        		o[this.name] = [o[this.name]];
+      		}
+      		o[this.name].push(this.value || '');
+    	} else {
+      		o[this.name] = this.value || '';
+    	}
+  	});
+  	return o;
+	};
+ // json to string on submit and post to dummy file
+	$(function() {
+  	$('form').submit(function() {
+    	var data ;
+    	data = JSON.stringify($('form').serializeObject());
+    	$.ajax({
+    		type: 'post',
+    		url: 'api/newBook.java',
+    		data: data,
+    		dataType: 'json'
+    	});
+    	return false;
+  	});
+});
+</script>

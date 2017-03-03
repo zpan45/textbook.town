@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Page Title -->
+  <title>Textbook Town - Sell Your Books</title>
+
+  <!-- Import JS/CSS System Wide Libs -->
+  <!-- Required Global Libs | Full List Maintained in: components/head.html, however HTML import does not exist right now so we need to copy paste, nick researched this for 2 hours with Mark. -->
+    <!-- JS -->
+    <script src="js/mustache.min.js"></script>
+    <script src="js/core.js"></script>
+
+    <!-- JS Lib -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="css/core.css">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+
+
+    <!-- FONT --><!-- TODO: reduce font weight use before production. -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:100,100i,300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
+
+</head>
+<body>
+<div id="top"></div>
+<div>
+<form id="bookInfo" action="" method="post">
+  <span class="form-field">
+          <label for="title">Title</label>
+          <input name="title" id="title" type="text" value="" size="40" aria-required="true">
+      </span>
+  <br>
+  <span class="form-field">
+          <label for="isbn">ISBN Number</label>
+          <input name="isbn" id="isbn" type="text" value="" size="40" aria-required="true">
+      </span>
+  <br>
+  <span class="form-field">
+          <label for="author">Author</label>
+          <input name="author" id="author" type="text" value="" size="40" aria-required="true">
+      </span>
+  <br>
+  <span class="form-field">
+          <label for="publisher">Publisher</label>
+          <input name="publisher" id="publisher" type="text" value="" size="40" aria-required="true">
+      </span>
+  <br>
+  <span class="form-field">
+          <label for="version">Version</label>
+          <input name="version" id="version" type="text" value="" size="40" aria-required="false">
+      </span>
+  <br>
+  <span class="form-field">
+          <label for="price">Minimum Bid</label>
+          <input name="price" id="price" type="text" value="" size="40" aria-required="false">
+      </span>
+  <br>
+  <span class="form-field">
+          <label for="subject">Subject</label>
+          <input name="subject" id="subject" type="text" value="" size="40" aria-required="false">
+      </span>
+  <br>
+  <span class="form-field">
+          <label for="year">Year Published</label>
+          <input name="year" id="year" type="text" value="" size="40" aria-required="true">
+      </span>
+  <br>
+  <span class="form-field">
+          <label for="description">A Brief Description of the Book</label>
+          <textarea name="description" id="description" rows="1" cols="40" aria-required="true">
+          </textarea>
+      </span>
+  <br>
+  <span class="form-field">
+          <label for="rating">The Books Condition</label>
+          <input name="rating" id="rating" type="range" value="50" min="0" max="100">
+      </span>
+  <br>
+  <span class="form-field">
+          <label for="sellby">Date of Auctions End</label>
+          <input name="sellby" id="sellby" type="date" aria-required="true">
+      </span>
+  <br>
+  <span class="form-field">
+          <label for="coverpic">Book Cover</label>
+          <input name="cover" id="coverpic" type="file" aria-required="true">
+      </span>
+  <br>
+  <span class="form-field">
+          <label for="pic1">Best Page</label>
+          <input name="pic1" id="pic1" type="file" aria-required="true">
+      </span>
+  <br>
+  <span class="form-field">
+          <label for="pic2">Worst page</label>
+          <input name="pic2" id="pic2" type="file" aria-required="true">
+      </span>
+  <span class="form-field">
+          <label for="pic3">Average Page</label>
+          <input name="pic3" id="pic3" type="file" aria-required="true">
+      </span>
+  <p class="submit">
+
+    <input type="submit" name="postBook" id="postBook" class="button" value="Post for Sale">
+  </p>
+</form>
+</div>
+</body>
+
+<script type="text/javascript">
+
+////
+// Page Render
+//
+$(function() {
+  //Chained rendering for nested items
+  Promise.resolve(render("#top", "tp/head.html", {title: "Sell a Book"})).then(
+      menu()
+  );
+
+});
+</script>
+
+<script type="text/javascript">
+ // json to string on submit and post to dummy file
+  $(function() {
+    $('form#bookInfo').submit(function(e) {
+      e.preventDefault();
+
+      var formData = new FormData(this);
+      token = getCookie("session");
+
+      if (token == null){
+          alert("you are not logged in!");
+          return false;
+      }
+
+      $.ajax({
+        type: 'POST',
+        url: 'http://127.0.0.1:5000/book/add',
+        data: formData,
+        headers: {
+      "Authorization": "Basic " + btoa(token + ":" + "")
+        },
+        success: function(res){
+            if(res.status == 'success'){
+            alert("textbook Posted!");
+            window.location.href = "dashboard.html";
+          }
+          else{
+              alert(res.message);
+          }
+        },
+        cache: false,
+        contentType: false,
+        processData: false
+
+      });
+      return false;
+    });
+});
+</script>
+
+</html>

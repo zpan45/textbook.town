@@ -70,6 +70,9 @@ function menu(){
 		    else{
 		        render("#menu", "tp/menu.html", {auth_action: "login.html", auth_link: "Login"})
 		    }
+		},
+		failure: function(res){
+			render("#menu", "tp/menu.html", {auth_action: "login.html", auth_link: "Login"})
 		}
 	});
 

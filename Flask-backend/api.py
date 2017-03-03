@@ -31,7 +31,7 @@ CORS(app)
 auth = HTTPBasicAuth()
 
 
-from validate import validPubYear
+from validate import validPubYear, stringToDate, validDateString
 
 ###### DEFINE THE DATA MODELS ######
 
@@ -303,19 +303,25 @@ def add_book():
         return jsonify({'status': 'failure', 'message': 'blank_fields'})
 
     # get other String variables that will have to be converted into ints or dates
-    pubYear = form['pub_year']
-    rating = form['rating']
-    minimumBid = form['starting_price']
-    bestPercent = form['best_page_percent']
-    worstPercent = form['worst_page_percent']
-    closingDate = form['date_closing']
+    pubYearStr = form['pub_year']
+    # ratingStr = form['rating']
+    # minimumBidStr = form['starting_price']
+    # bestPercentStr = form['best_page_percent']
+    # worstPercentStr = form['worst_page_percent']
+    dateStr = form['date_closing']
 
 
-
-    if validPubYear(pubYear):
-        pub_int = int(pubYear)
+    # validate year published
+    if validPubYear(pubYearStr):
+        pub_int = int(pubYearStr)
     else:
         return jsonify({'status': 'failure', 'message': 'invalid_pub_year'})
+
+    # validate closingDate
+    if validDateString(dateStr):
+        closingDate = stringToDate(dateStr)
+    else:
+        return jsonify({'status': 'failure', 'message': 'invalid_date_closing'})
 
 
 

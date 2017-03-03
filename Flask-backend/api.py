@@ -370,9 +370,7 @@ def get_json():
 
 
 ###### HELPER METHODS FOR APP ROUTES ######
-# Can't seem to put these in a separate file, getting some weird circular imports or something
-
-
+# Can't seem to put these in a separate file, getting some weird circular imports or something so I left them
 def allowedFile(filename):
     '''
     Determines if file has a valid extension
@@ -391,7 +389,7 @@ def uniqueFileName(filename):
 
     # make new filename with uuid + extension
     filename = secure_filename(str(uuid.uuid4()) + filename[-4:])
-    # uuid is EXTREMELY unlikely to have duplicates, but check just to be safe
+    # uuid is EXTREMELY unlikely to have duplicates, but make sure to be safe
     while os.path.isfile(os.path.join(app.config['UPLOAD_FOLDER'], filename)):
         filename = secure_filename(str(uuid.uuid4()) + filename[-4:])
     return filename

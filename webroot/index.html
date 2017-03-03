@@ -62,14 +62,8 @@ $(function() {
 	$("body").fadeIn(250);
 
 	//Render Menu
-	if(isAuth()){
-		render("#menu", "tp/menu.html", {auth_action: "logout.html", auth_link: "Logout"})
-	}
-	else{
-		render("#menu", "tp/menu.html", {auth_action: "login.html", auth_link: "Login"})
-	}
+	menu();
 	
-
 
 	//Render Splash
 	render("#splash", "tp/indexSplash.html")

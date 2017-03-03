@@ -46,28 +46,29 @@ function getCookie(cname) {
 	return "";
 }
 
-function isAuth(){
+
+function menu(){
 
 	//Get Token
 	token = getCookie("session");
 
 	//If unset
 	if (token == null){
-	    return false;
+	    render("#menu", "tp/menu.html", {auth_action: "login.html", auth_link: "Login"})
 	}
 
 	$.ajax({
 		type: 'POST',
 		url: 'http://127.0.0.1:5000/login/check',
-		data: "{'token': "+token+"}",
+		data: '{"token": "'+token+'"}',
 		contentType:"application/json",
 		dataType: 'json',
 		success: function(res){
 		    if(res.status == 'success'){
-			    return true;
+			    render("#menu", "tp/menu.html", {auth_action: "logout.html", auth_link: "Logout"})
 		    }
 		    else{
-		        return false;
+		        render("#menu", "tp/menu.html", {auth_action: "login.html", auth_link: "Login"})
 		    }
 		}
 	});

@@ -41,7 +41,7 @@
 			<br>
 			<span class="form-field">
 			<label for="password">Password:</label>
-			<input name="password" id="password" type="text" placeholder="Password" value="" size="40" aria-required="true">
+			<input name="password" id="password" type="password" placeholder="Password" value="" size="40" aria-required="true">
 			</span>
 			<br>
 			<p class="submit">
@@ -124,7 +124,9 @@ $(function() {
 
 		},
 		error: function(res){
-			alert(res);
+			if(res.status == 401){
+				alert("Invalid username or password. (HowBoutDat?)");
+			}
 		}
 	});
 

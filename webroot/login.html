@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Page Title -->
+	<title>Textbook Town - Login</title>
+
+	<!-- Import JS/CSS System Wide Libs -->
+	<!-- Required Global Libs | Full List Maintained in: components/head.html, however HTML import does not exist right now so we need to copy paste, nick researched this for 2 hours with Mark. -->
+		<!-- JS -->
+		<script src="js/mustache.min.js"></script>
+		<script src="js/core.js"></script>
+
+		<!-- JS Lib -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+		<!-- CSS -->
+		<link rel="stylesheet" type="text/css" href="css/core.css">
+
+		<!-- FONT --><!-- TODO: reduce font weight use before production. -->
+		<link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Josefin+Sans:100,100i,300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
+
+</head>
+<body style="background-color:#C5494C;">
+
+	<div style="background-color:#C5494C;padding-top:75px;"></div>
+	<div>
+		<span><a href="index.html"><img src="img/home.png" style="height:45px" align="right"></a></span>
+		<span><img src="img/logo.png" style="height:65px" align="left"></span>
+	</div>
+	<br>
+	<center>
+		<div style="width:600px;height:150px;margin-top:5%;background-color:white;">
+			<center>
+			<form id = "loginPage" action = "" method = "GET">
+			<br>
+			<span class="form-field">
+			<label for="username">Username:</label>
+			<input name="username" id="username" type="text" placeholder="Username" value="" size="40" aria-required="true">
+			</span>
+			<br>
+			<span class="form-field">
+			<label for="password">Password:</label>
+			<input name="password" id="password" type="text" placeholder="Password" value="" size="40" aria-required="true">
+			</span>
+			<br>
+			<p class="submit">
+			<input type="submit" name="login" id="login" class="button" value="Login">
+			</p>
+			</form>
+			<center>
+
+		</div>
+	</center>
+	<br>
+	<center>
+	<div>
+	  <span><a class = "link" href = 'registrationPage.html'>Don't have an account? Click here to register!</a></span>
+	</div>
+</center>
+	</div>
+
+</body>
+<!-- Page Client Side Functionality -->
+<script type="text/javascript">
+
+////
+// Page Render
+//
+$(function() {
+	//Chained rendering for nested items
+	Promise.resolve(render("#top", "tp/head.html", {title: ""})).then(
+    	render("#menu", "tp/menu.html", {auth_action: "#", auth_link: ""})
+	);
+
+});
+</script>
+
+<script>
+
+// login form > json
+  	$.fn.serializeObject = function() {
+  	var o = {};
+  	var a = this.serializeArray();
+  	$.each(a, function() {
+    	if (o[this.name] !== undefined) {
+      		if (!o[this.name].push) {
+        		o[this.name] = [o[this.name]];
+      		}
+      		o[this.name].push(this.value || '');
+    	} else {
+      		o[this.name] = this.value || '';
+    	}
+  	});
+  	return o;
+	};
+
+
+// json to string on submit and post to dummy file
+$(function() {
+   $('form').submit(function(e) {
+
+   	//Process data
+	e.preventDefault();
+	var data; 
+	data = JSON.stringify($('form').serializeObject());
+	data = JSON.parse(data);
+
+	//Send call
+	$.ajax({
+		type: 'GET',
+		url: 'http://'+data.username+':'+data.password+'@localhost/user/login',
+		success: function(res){
+			
+			//Parse reply data
+			res = JSON.parse(res);
+			if(res.status == 'success'){
+
+				//Set token cookie
+				setCookie("session", res.token, res.duration);
+				window.location.replace("dashboard.html");
+			}
+
+		} 
+	});
+
+   });
+});
+
+</script>
+
+</html>

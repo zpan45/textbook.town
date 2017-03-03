@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Page Title -->
+	<title>Textbook Town - Register</title>
+
+	<!-- Import JS/CSS System Wide Libs -->
+	<!-- Required Global Libs | Full List Maintained in: components/head.html, however HTML import does not exist right now so we need to copy paste, nick researched this for 2 hours with Mark. -->
+		<!-- JS -->
+		<script src="js/mustache.min.js"></script>
+		<script src="js/core.js"></script>
+
+		<!-- JS Lib -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+		<!-- CSS -->
+		<link rel="stylesheet" type="text/css" href="css/core.css">
+
+		<!-- FONT --><!-- TODO: reduce font weight use before production. -->
+		<link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Josefin+Sans:100,100i,300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
+
+</head>
+<body style="background-color:#C5494C;">
+
+	<div style="background-color:#C5494C;padding-top:75px;"></div>
+	<div>
+		<span><a href="index.html"><img src="img/home.png" style="height:45px" align="right"></a></span>
+		<span><img src="img/logo.png" style="height:65px" align="left"></span>
+	</div>
+	<br>
+	<center>
+		<div style="width:500px;height:200px;margin-top:5%;background-color:white;">
+			<center>
+<form id = "userInfo" action = "" method = "POST">
+  <br>
+  <span class="form-field">
+    <label for="username">Username:</label>
+    <input name="username" id="username" type="text" value="" size="40" placeholder ="New username" aria-required="true">
+  </span>
+  <br>
+  <span class="form-field">
+    <label for="password">Password:</label>
+    <input name="password" id="password" type="password" pattern=".{6,32}" required title="Min 6 and max 32 characters required" onchange="this.setCustomValidity(this.validity.patternMismatch ? 'Must have at least 6 characters' : ''); if(this.checkValidity()) form.passwordCheck.pattern = this.value;" placeholder="Password" value="" size="40" aria-required="true">
+  </span>
+  <br>
+  Note: Password must be 6 to 32 characters.
+  <br>
+  <span class="form-field">
+    <label for="passwordCheck">Confirm Password:</label>
+    <input name="passwordCheck" id="passwordCheck" type="password" pattern=".{6,32}" required title="Min6 and max 32 characters required" onchange="this.setCustomValidity(this.validity.patternMismatch ? 'Please enter the same Password as above' : '');" placeholder="Verify Password" value="" size="40" aria-required="true">
+  </span>
+  <br>
+  <!-- Could be used in Stage 3
+  <p>
+    Upload a profile photo (optional)
+    <input type="file" name="profilePhoto">
+  </p>
+  -->
+  <span class="form-field">
+    <label for="contactLink">Contact via link by Facebook Messenger or Email </label>
+    <input name="contactLink" id="contactLink" type="text" placeholder="Facebook link or E-mail" value="" size="40" aria-required="true">
+  </span>
+  <br>
+    <p class="submit">
+    <input type="submit" name="register" id="register" class="button" value="Click to Register!">
+  </p>
+</form>
+</center>
+
+		</div>
+	</center>
+
+
+</body>
+
+<script type="text/javascript">
+
+////
+// Page Render
+//
+$(function() {
+	//Chained rendering for nested items
+	Promise.resolve(render("#top", "tp/head.html", {title: "Register"})).then(
+    	render("#menu", "tp/menu.html", {auth_action: "#", auth_link: "Login"})
+	);
+
+});
+</script>
+
+<script>
+
+// login form > json
+  	$.fn.serializeObject = function() {
+  	var o = {};
+  	var a = this.serializeArray();
+  	$.each(a, function() {
+    	if (o[this.name] !== undefined) {
+      		if (!o[this.name].push) {
+        		o[this.name] = [o[this.name]];
+      		}
+      		o[this.name].push(this.value || '');
+    	} else {
+      		o[this.name] = this.value || '';
+    	}
+  	});
+  	return o;
+	};
+
+
+//Json call
+$(function() {
+	$('#userInfo').submit(function(e) {
+
+		//Parse input
+		e.preventDefault();
+		var data ;
+		data = JSON.stringify($('form').serializeObject());
+		data = JSON.parse(data);
+
+		//Call backend
+		$.ajax({
+			type: 'POST',
+			url: 'SERVER/user/register',
+			data: data,
+			dataType: 'json',
+			success: function(res){
+
+				res = JSON.parse(res);
+				if(res.status == 'success'){
+					window.location.replace("login.html");
+				}
+				else{
+					if(res.message == 'username_taken'){
+						alert("That Username is Already Taken");
+					}
+					else if(res.message == 'username_too_short'){
+						alert("That Username is Too Short");
+					}
+					else if(res.message == 'username_too_long'){
+						alert("That Username is Too Long");
+					}
+					else if(res.message == 'password_too_short'){
+						alert("That Password is Too Short");
+					}
+					else if(res.message == 'passwords_not_matching'){
+						alert("The Passwords Dont Match");
+					}
+					else{
+						alert("ERROR!");
+					}
+				}
+
+			}
+		});
+	});
+});
+
+
+
+/*
+$(function() {
+   $('form').submit(function(e) {
+
+   	//Process data
+	e.preventDefault();
+	var data; 
+	data = JSON.stringify($('form').serializeObject());
+	data = JSON.parse(data);
+
+	//Send call
+	$.ajax({
+		type: 'GET',
+		url: 'http://'+data.username+':'+data.password+'@localhost/user/login',
+		success: function(res){
+			
+			//Parse reply data
+			res = JSON.parse(res);
+			if(res.status == 'success'){
+
+				//Set token cookie
+				setCookie("session", res.token, res.duration);
+				window.location.replace("dashboard.html");
+			}
+
+		} 
+	});
+
+   });
+});
+
+
+*/
+
+</script>
+
+</html>

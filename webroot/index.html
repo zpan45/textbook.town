@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Page Title -->
+	<title>Textbook Town - Dashboard</title>
+
+	<!-- Import JS/CSS System Wide Libs -->
+	<!-- Required Global Libs | Full List Maintained in: components/head.html, however HTML import does not exist right now so we need to copy paste, nick researched this for 2 hours with Mark. -->
+		<!-- JS -->
+		<script src="js/mustache.min.js"></script>
+		<script src="js/core.js"></script>
+
+		<!-- JS Lib -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+		<!-- CSS -->
+		<link rel="stylesheet" type="text/css" href="css/core.css">
+		<link rel="stylesheet" type="text/css" href="css/index.css">
+
+
+		<!-- FONT --><!-- TODO: reduce font weight use before production. -->
+		<link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Josefin+Sans:100,100i,300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
+
+</head>
+
+<body style="display:none;background-color:#C5494C;">
+
+	<!-- Splash Section -->
+	<div id="head" style="background-color:#C4494D;">
+		<div id="menu"></div>
+		<div id="splash" style="margin-top:110px;padding-bottom:45px;padding-left:45px;padding-right:45px;"></div>
+		<center><span class="mid_subtitle"><i>Sell your books to the <b>highest bidder</b>. Pay what you think the book is <b>worth</b>.</i></span></center>
+		<span style="display:inline-block;height:20px;"></span>
+	</div>
+	<div style="background-color:#C4494D;">
+		<img src="img/book_div.png" style="width:100%;margin-bottom:-5px;">
+	</div>
+
+	<!-- Info Section -->
+	<div style="background-color:#FFFFFF;padding:50px;padding-top:0px;">
+	    <div id="how"></div>
+	    <div id="search"></div>
+    </div>
+
+    <!-- Info Section Two -->
+	<div style="background-color:#C5494C;padding:50px;padding-top:0px;">
+   		<div id="sell"></div>
+   	</div>
+
+   	<div id="footer"></div>
+
+</body>
+
+<script type="text/javascript">
+
+////
+// Page Render
+//
+$(function() {
+
+	$("body").fadeIn(250);
+
+	//Render Menu
+	menu();
+	
+
+	//Render Splash
+	render("#splash", "tp/indexSplash.html")
+
+	//Render Process Section
+	$.get("tp/indexTextBrick.html", function(tmp) {
+
+			//Prepre render a nested template. 
+			first = Mustache.render(tmp, {title: "Post books you do not need anymore.", sub: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do."});
+			second = Mustache.render(tmp, {title: "Your classmates bid their valuation.", sub: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do."});
+			third = Mustache.render(tmp, {title: "Winner Selected & Trade on Campus", sub: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do."});
+
+			//Render parent template.
+			render("#how", "tp/threePane.html", {
+				title: "How it Works",
+				first: first,
+				second: second,
+				third: third
+			});
+	});
+
+	//Render search book section
+    render("#search", "tp/searchDemo.html", {
+    	title: "Find a Book", 
+    	img:'img/books.png', 
+    });
+
+    //Render Sell book section
+    render("#sell", "tp/onePane.html", {
+    	title: "Sell your Book", 
+    	t_bg:"#FFFFFF", 
+    	t_c: "#C5494C",  
+    	img: "img/book_money.png", 
+    	side: 
+    		`
+    		Unlock your<br> 
+    		textbooks'<br> 
+    		value.<br>
+    		`,
+    	side_2:
+    		`
+    		<a href="#" style='text-decoration:none;'><span class="motion_button">Sell Now</span></a>
+
+    		`
+    });
+
+    //Footer Render
+    render("#footer", "tp/foot.html")
+
+});
+
+</script>
+</html>

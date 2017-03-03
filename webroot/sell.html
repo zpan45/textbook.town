@@ -144,8 +144,13 @@ $(function() {
     		headers: {
 			"Authorization": "Basic " + btoa(token + ":" + "")
   			},
-    		success: function(){
-    		    alert('textbook added');
+    		success: function(res){
+    		    if(res.status == 'success'){
+				    alert("textbook Posted!");
+			    }
+			    else{
+			        alert(res.message);
+			    }
     		},
     		cache: false,
     		contentType: false,

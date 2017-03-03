@@ -79,6 +79,7 @@ class Textbook(db.Model):
     author = db.Column(db.Text)                     # author
     isbn = db.Column(db.Text)                       # isbn
     publisher = db.Column(db.Text)                  # publisher
+    yearPublished = db.Column(db.Integer)           # year published
     description = db.Column(db.Text)                # description of book
     version = db.Column(db.Text)                    # version
     condition = db.Column(db.Integer)               # 0-100 rating of textbook quality
@@ -87,8 +88,6 @@ class Textbook(db.Model):
     bestPhotoName = db.Column(db.String(50))        # filename of best photo, stored in ./img/
     worstPhotoName = db.Column(db.String(50))       # filename of worst photo, stored in ./img/
     averagePhotoName = db.Column(db.String(50))     # filename of worst photo, stored in ./img/
-    bestPercent = db.Column(db.Integer)             # percentage of pages that are "best" quality
-    worstPercent = db.Column(db.Integer)            # percentage of pages that are "worst" quality
     seller = db.Column(db.Integer)                  # id of the seller
     auction = db.Column(db.Integer)                 # id of the auction
 
@@ -225,17 +224,21 @@ def add_book():
     :return: JSON {'status': 'success', 'id': newBook.id} or {'status': 'failure'}
     '''
 
+    print(request.files)
+
     # if 1 or more files is missing
-    if 'photo_cover' not in request.files or 'photo_best' not in request.files or 'photo_worst' not in request.files or 'photo_average' not in request.files:
+    if 'cover' not in request.files or 'pic1' not in request.files or 'pic2' not in request.files or 'pic3' not in request.files:
+        print("Files missing")
         return jsonify({'status': 'failure', 'message': 'missing_photos'})
 
-    cover = request.files['photo_cover']
-    best = request.files['photo_best']
-    worst = request.files['photo_worst']
-    average = request.files['photo_average']
+    cover = request.files['cover']
+    best = request.files['pic1']
+    worst = request.files['pic2']
+    average = request.files['pic3']
 
     # if any of the files have disallowed extensions
     if not allowedFile(cover.filename) or not allowedFile(best.filename) or not allowedFile(worst.filename) or not allowedFile(average.filename):
+        print("bad file extension")
         return jsonify({'status': 'failure', 'message': 'bad_file_extension'})
 
     # Now we know files are good to go!
@@ -243,29 +246,25 @@ def add_book():
     # get the form data (excluding files)
     form = request.form.to_dict()              # get the form data (excluding files)
 
-    # get String variables from the form
+    # get stuff from the form
     title = form['title']
-    author = form['author']
-    version = form['version']
-    desc = form['desc']
-    publisher = form['publisher']
     isbn = form['isbn']
+    author = form['author']
+    publisher = form['publisher']
+    version = form['version']
+    minimumBidStr = form['price']
     course = form['subject']
+    pubYearStr = form['year']
+    desc = form['description']
+    ratingStr = form['rating']
+    dateStr = form['sellby']
+
+
+    print(dateStr, ratingStr)
 
     # if any of these fields are blank
-    if title=="" or author=="" or version=="" or desc=="" or publisher=="" or isbn=="" or course =="":
-        return jsonify({'status': 'failure', 'message': 'blank_fields'})
-
-    # get other String variables that will have to be converted into ints or dates
-    pubYearStr = form['pub_year']
-    ratingStr = form['rating']
-    minimumBidStr = form['starting_price']
-    bestPercentStr = form['best_page_percent']
-    worstPercentStr = form['worst_page_percent']
-    dateStr = form['date_closing']
-
-    #if any of these fields are blank
-    if pubYearStr=="" or ratingStr=="" or minimumBidStr=="" or bestPercentStr=="" or worstPercentStr=="" or dateStr=="":
+    if title=="" or isbn=="" or author=="" or publisher=="" or version=="" or minimumBidStr=="" or course=="" \
+    or pubYearStr=="" or ratingStr=="" or minimumBidStr=="" or dateStr=="":
         return jsonify({'status': 'failure', 'message': 'blank_fields'})
 
     # validate year published
@@ -285,18 +284,6 @@ def add_book():
         rating = int(ratingStr)
     else:
         return jsonify({'status': 'failure', 'message': 'invalid_rating'})
-
-    # validate bestPercent
-    if validPercent(bestPercentStr):
-        bestPercent = int(bestPercentStr)
-    else:
-        return jsonify({'status': 'failure', 'message': 'invalid_best_page_percent'})
-
-    # validate worstPercent
-    if validPercent(worstPercentStr):
-        worstPercent = int(worstPercentStr)
-    else:
-        return jsonify({'status': 'failure', 'message': 'invalid_worst_page_percent'})
 
     # validate minimumBid
     if validMinimumBid(minimumBidStr):
@@ -321,8 +308,7 @@ def add_book():
     # Create Textbook object with all info except auction id
     newBook = Textbook(title=title, author=author, isbn=isbn, publisher=publisher, description=desc, version=version,
                        condition=rating, course=course, coverPhotoName=coverPath, bestPhotoName=bestPath,
-                       worstPhotoName=worstPath, averagePhotoName=averagePath, bestPercent=bestPercent,
-                       worstPercent=worstPercent, seller=seller)
+                       worstPhotoName=worstPath, averagePhotoName=averagePath, seller=seller, yearPublished=pubYear)
 
     # Create Auction object with all info except textbook id
     newAuction = Auction(minimumBid=minimumBid, salePrice=0, isCurrent=True, closingDate=closingDate)

@@ -30,8 +30,26 @@
 	</div>
 	<br>
 	<center>
-		<div style="width:600px;height:150px;margin-top:5%;background-color:blue;">
-			<iframe src="tp/login.html" frameborder='0' width='290%' height='100' allowtransparency="true" style="width:100%;height:100%;background: #FFFFFF"></iframe>
+		<div style="width:600px;height:150px;margin-top:5%;background-color:white;">
+			<center>
+			<form id = "loginPage" action = "" method = "GET">
+			<br>
+			<span class="form-field">
+			<label for="username">Username:</label>
+			<input name="username" id="username" type="text" placeholder="Username" value="" size="40" aria-required="true">
+			</span>
+			<br>
+			<span class="form-field">
+			<label for="password">Password:</label>
+			<input name="password" id="password" type="text" placeholder="Password" value="" size="40" aria-required="true">
+			</span>
+			<br>
+			<p class="submit">
+			<input type="submit" name="login" id="login" class="button" value="Login">
+			</p>
+			</form>
+			<center>
+
 		</div>
 	</center>
 	<br>
@@ -79,19 +97,26 @@ $(function() {
 
 
 // json to string on submit and post to dummy file
- $(function() {
-   $('form').submit(function() {
-     var data ;
-     data = JSON.stringify($('form').serializeObject());
-     $.ajax({
-       type: 'login',
-       url: 'api/knownUser.java',
-       data: data,
-       dataType: 'json'
-     });
-     return false;
+$(function() {
+   $('form').submit(function(e) {
+
+   	//Process data
+	e.preventDefault();
+	var data; 
+	data = JSON.stringify($('form').serializeObject());
+	data = JSON.parse(data);
+
+	$.ajax({
+		type: 'GET',
+		url: 'http://'+JSON.stringify(data).username+':'+data.password+'@localhost/user/login',
+		success: function(res){
+			alert(res);
+		} 
+	});
+
    });
 });
+
 $(function setCookie(cname, cvalue, exdays){
 			var d = new Date();
 			d.setTime(d.getTime() + (exdays*24*60*60*1000));

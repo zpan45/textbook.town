@@ -28,7 +28,6 @@ CS2212 Software Engineering Team 4
 
 ##Working on Project
 ###Getting Started
-*Will be expanded when we learn GRAILS*
 1. Clone Project to Local Machine
 
 ```bash
@@ -75,7 +74,7 @@ nick@Nicks-MacBook-Pro-2:/Applications/XAMPP/xamppfiles/htdocs/elixir/Flask-back
 * /Flash-backend is the backend logic and API to the frontend. It runs on python and mySQL.
 * [Our Team Website](https://nelder.github.io/elixir/): for required team github page about us and our project.
 
-##Stage 2
+##Stage 2 Updates
 ### Project elixir internal API
 Written in Python, this API enables us to use mysql for Users, Textbooks, Bids, and Auctions databases.
 

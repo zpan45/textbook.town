@@ -122,7 +122,10 @@ $(function() {
 				window.location.replace("dashboard.html");
 			}
 
-		} 
+		},
+		error: function(res){
+			alert(res);
+		}
 	});
 
    });

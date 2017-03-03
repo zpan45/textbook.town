@@ -126,9 +126,11 @@ $(function() {
 <script type="text/javascript">
  // json to string on submit and post to dummy file
 	$(function() {
-  	$('form#bookInfo').submit(function() {
+  	$('form#bookInfo').submit(function(e) {
+  		e.preventDefault();
+
     	var formData = new FormData(this);
-    	token = getCookie(session);
+    	token = getCookie("session");
 
     	if (token == null){
     	    alert("you are not logged in!");
@@ -139,10 +141,9 @@ $(function() {
     		type: 'POST',
     		url: 'http://127.0.0.1:5000/book/add',
     		data: formData,
-    		async: false,
-    		beforeSend: function (xhr) {
-    		    xhr.setRequestHeader('Authorization', 'Basic ' + token);
-    		},
+    		headers: {
+			"Authorization": "Basic " + btoa(token + ":" + "")
+  			},
     		success: function(){
     		    alert('textbook added');
     		},

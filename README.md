@@ -70,12 +70,10 @@ nick@Nicks-MacBook-Pro-2:/Applications/XAMPP/xamppfiles/htdocs/elixir/Flask-back
 9. Load frontent using localhost and apache webserver; rejoice as the website is now functional. We recommend trying: (click login, click register, register, login, add book to sell).
 
 ##Project Structure
-<<<<<<< HEAD
 * /docs [Our Website](https://nelder.github.io/elixir/): for required team github page about us and our project.
 * /webroot frontend javascript and designs.
 * /Flash-backend is the backend logic and API to the frontend. It runs on python and mySQL.
-=======
-* [Our Website](https://nelder.github.io/elixir/): for required team github page about us and our project.
+* [Our Team Website](https://nelder.github.io/elixir/): for required team github page about us and our project.
 
 ##Stage 2
 ### Project elixir internal API
@@ -137,6 +135,3 @@ Press Command+D to terminate python. Under vnev,
     * Restarting with reloader
 
 Now we have our API running and we should be able to test it with [Postman](https://www.getpostman.com/).
-
-### elixir
->>>>>>> 8f7805ddaaa01ec43700280abd896d61f49325cb

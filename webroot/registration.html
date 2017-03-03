@@ -116,19 +116,18 @@ $(function() {
 		e.preventDefault();
 		var data ;
 		data = JSON.stringify($('form').serializeObject());
-		data = JSON.parse(data);
 
 		//Call backend
 		$.ajax({
 			type: 'POST',
-			url: 'SERVER/user/register',
+			url: 'http://127.0.0.1:5000/user/register',
 			data: data,
+			contentType:"application/json",
 			dataType: 'json',
 			success: function(res){
-
-				res = JSON.parse(res);
 				if(res.status == 'success'){
 					window.location.replace("login.html");
+					console.log("success")
 				}
 				else{
 					if(res.message == 'username_taken'){
@@ -150,47 +149,17 @@ $(function() {
 						alert("ERROR!");
 					}
 				}
+			
 
+			},
+			failure: function(err){
+				console.log(err)
 			}
+
 		});
 	});
 });
 
-
-
-/*
-$(function() {
-   $('form').submit(function(e) {
-
-   	//Process data
-	e.preventDefault();
-	var data; 
-	data = JSON.stringify($('form').serializeObject());
-	data = JSON.parse(data);
-
-	//Send call
-	$.ajax({
-		type: 'GET',
-		url: 'http://'+data.username+':'+data.password+'@localhost/user/login',
-		success: function(res){
-			
-			//Parse reply data
-			res = JSON.parse(res);
-			if(res.status == 'success'){
-
-				//Set token cookie
-				setCookie("session", res.token, res.duration);
-				window.location.replace("dashboard.html");
-			}
-
-		} 
-	});
-
-   });
-});
-
-
-*/
 
 </script>
 

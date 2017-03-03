@@ -109,13 +109,14 @@ $(function() {
 	//Send call
 	$.ajax({
 		type: 'GET',
-		url: 'http://'+data.username+':'+data.password+'@localhost/user/login',
+		url: 'http://127.0.0.1:5000/user/login',
+		headers: {
+			"Authorization": "Basic " + btoa(data.username + ":" + data.password)
+  		},
 		success: function(res){
 			
 			//Parse reply data
-			res = JSON.parse(res);
 			if(res.status == 'success'){
-
 				//Set token cookie
 				setCookie("session", res.token, res.duration);
 				window.location.replace("dashboard.html");

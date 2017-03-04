@@ -38,8 +38,6 @@ git clone https://github.com/nelder/elixir
 3. Move project into apache webroot or at least ensure webroot folder is served on localhost using apache. 
 4. The frontend is now being served.
 
-* `git clone https://github.com/nelder/elixir` to install the project. 
-
 ###Install Flask (Python Backend)
 1. Ensure Python3 is installed. 
 2. Ensure mySQL is installed. 

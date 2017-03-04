@@ -68,6 +68,11 @@ nick@Nicks-MacBook-Pro-2:/Applications/XAMPP/xamppfiles/htdocs/elixir/Flask-back
 
 9. Load frontent using localhost and apache webserver; rejoice as the website is now functional. We recommend trying: (click login, click register, register, login, add book to sell).
 
+###Notes for Testing
+1. If the menu does not load, wait 30 seconds (we are working on this bug).
+2. All errors are displayed with alerts, they will be built into a UI element in the next version.
+3. Logout works.
+
 ##Project Structure
 * /docs [Our Website](https://nelder.github.io/elixir/): for required team github page about us and our project.
 * /webroot frontend javascript and designs.

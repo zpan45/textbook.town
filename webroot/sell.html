@@ -163,4 +163,34 @@ $(function() {
 });
 </script>
 
+<script type="text/javascript">
+$(function() {
+
+
+  //Get Token
+  token = getCookie("session");
+
+  //If unset
+  if (token == null){
+      window.location.replace("login.html");
+  }
+
+  $.ajax({
+    type: 'POST',
+    url: 'http://127.0.0.1:5000/login/check',
+    data: '{"token": "'+token+'"}',
+    contentType:"application/json",
+    dataType: 'json',
+    success: function(res){
+        if(res.status != 'success'){
+          window.location.replace("login.html");
+        }
+    },
+    failure: function(res){
+      window.location.replace("login.html");
+    }
+  });
+});
+</script>
+
 </html>

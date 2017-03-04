@@ -9,8 +9,9 @@ from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSign
 from werkzeug.utils import secure_filename
 import uuid
 
-# Database login information -- uses pymysql as connector -- '://user:password@host/database'
-DATABASE_LOGIN_STRING = 'mysql+pymysql://root:@localhost/textbook_town'
+# Database login information -- uses pymysql as connector --
+# 'mysql+pymysql://user:password@host/database'
+DATABASE_LOGIN_STRING = 'mysql+pymysql://root:password@localhost/textbook_town'
 
 SERVER = 'http://127.0.0.1:5000/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])     # allowed file extensions

@@ -26,7 +26,7 @@ CS2212 Software Engineering Team 4
 * Teacher: Ethan Jackson <ejacks42@uwo.ca>
 * TA: Jennifer Emily Knull <jknull@uwo.ca>
 
-##Working on Project
+##For Jennie: How to install 
 ###Getting Started
 1. Clone Project to Local Machine
 
@@ -38,13 +38,11 @@ git clone https://github.com/nelder/elixir
 3. Move project into apache webroot or at least ensure webroot folder is served on localhost using apache. 
 4. The frontend is now being served.
 
-* `git clone https://github.com/nelder/elixir` to install the project. 
-
 ###Install Flask (Python Backend)
 1. Ensure Python3 is installed. 
 2. Ensure mySQL is installed. 
 3. Create database in mySQL with any name, like textbook_town. 
-4. Build requirements (while in project folder in terminal) `sudo pip3 install -r requirements.txt`
+4. Add pip dependencies (while in Flask-backend folder) `sudo pip3 install -r requirements.txt`
 5. Modify api.py in the backend folder with the correct mySQL information (constant DATABASE_LOGIN_STRING)
 6. Run database install commands:
 

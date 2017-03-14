@@ -1,5 +1,7 @@
 
-from api import db, Bid
+from api import db, Bid, Textbook, Auction
+from sqlalchemy import func
+
 
 def countBids(auctionID):
     '''
@@ -10,4 +12,45 @@ def countBids(auctionID):
 
     bids = Bid.query.filter_by(auction=auctionID).all()
     return len(bids)
+
+
+def search_by_title(searchString):
+    '''
+    Searches database for textbooks by title
+    :param searchString: query entered by the user
+    :return: List of textbook ids that match search criteria
+    '''
+    # tokenize keywords
+    keywords = searchString.split()
+
+    queryResults = []
+    matchingIDs = []
+    searchResults = []
+
+    # search for keywords separately
+    for keyword in keywords:
+        queryResults.append(Textbook.query.filter(func.lower(Textbook.title).like("%" + keyword.lower() + "%")).all())
+
+    # results.append(Textbook.query.filter(func.lower(Textbook.title).op('regexp')(r'\b{}\b'.format(keyword.lower()))).all())
+
+    # If no textbook matches any of the keywords
+    if len(queryResults) == 0:
+        # Return an empty list
+        return searchResults
+
+    for result in queryResults:
+        matchingIDs.append([r.id for r in result])
+
+    allPresent = True
+
+    # get all textbooks that contain every keyword
+    for id in matchingIDs[0]:
+        for idList in matchingIDs[1:]:
+            if id not in idList:
+                allPresent = False
+                break
+        if allPresent:
+            searchResults.append(id)
+
+    return searchResults
 

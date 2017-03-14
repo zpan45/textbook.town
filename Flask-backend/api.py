@@ -11,7 +11,7 @@ import uuid
 
 # Database login information -- uses pymysql as connector --
 # 'mysql+pymysql://user:password@host/database'
-DATABASE_LOGIN_STRING = 'mysql+pymysql://root:password@localhost/textbook_town'
+DATABASE_LOGIN_STRING = 'mysql+pymysql://root:password@localhost/elixir'
 
 SERVER = 'http://127.0.0.1:5000/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])     # allowed file extensions
@@ -328,6 +328,35 @@ def valid_token():
     if user is None:
         return jsonify({'status': 'failure'})
     return jsonify({'status': 'success'})
+
+
+'''
+'SERVER/book/bid?ceiling=num&textbook=id'
+'''
+
+@app.route('/book/bid', methods=['GET'])
+@auth.login_required
+def place_bid():
+    if 'ceiling' not in request.args or 'textbook' not in request.args:
+        print('Bad Request')
+        return jsonify({'status': 'failure'})
+    ceiling = request.args.get('ceiling')
+    textbookID = request.args.get('textbook')
+    userID = g.user.id
+
+
+    # NEED TO VERIFY THAT THE BID AMOUNT IS ABOVE THE MINIMUM BID
+
+    associatedAuction = Auction.query.filter_by(textbook=textbookID).first()
+    auctionID = associatedAuction.id
+
+    newBid = Bid(ceiling=ceiling, auction=auctionID, bidder=userID)
+
+    db.session.add(newBid)
+    db.session.commit()
+
+    return jsonify({'status': 'success'})
+
 
 
 ###### TEST ENDPOINTS FOR PRACTICE #######

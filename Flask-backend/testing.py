@@ -5,15 +5,9 @@ from sqlalchemy import func
 from search.functions import countBids, search_by_title
 
 
-
 def main():
     print('Bids:', countBids(1))
-    print(search_by_title("liKE I o"))
-
-
-
-
-
+    print(search_by_title("liKE%20I%20o"))
 
 
 def queryPractice(string):
@@ -35,7 +29,6 @@ def queryPractice(string):
     if len(results) == 0:
         # Return an empty list or something like that
         pass
-
 
     for result in results:
         matchingIDs.append([r.id for r in result])

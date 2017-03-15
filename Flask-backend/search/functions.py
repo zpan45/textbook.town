@@ -17,11 +17,11 @@ def countBids(auctionID):
 def search_by_title(searchString):
     '''
     Searches database for textbooks by title
-    :param searchString: query entered by the user
+    :param searchString: query entered by the user (separated by %20 instead of spaces)
     :return: List of textbook ids that match search criteria
     '''
     # tokenize keywords
-    keywords = searchString.split()
+    keywords = searchString.split('%20')
 
     queryResults = []
     matchingIDs = []

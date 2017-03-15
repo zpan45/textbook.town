@@ -31,6 +31,7 @@ def search_by_title(searchString):
     for keyword in keywords:
         queryResults.append(Textbook.query.filter(func.lower(Textbook.title).like("%" + keyword.lower() + "%")).all())
 
+    # This was a regex that wasn't working
     # results.append(Textbook.query.filter(func.lower(Textbook.title).op('regexp')(r'\b{}\b'.format(keyword.lower()))).all())
 
     # If no textbook matches any of the keywords
@@ -41,16 +42,17 @@ def search_by_title(searchString):
     for result in queryResults:
         matchingIDs.append([r.id for r in result])
 
-    allPresent = True
 
     # get all textbooks that contain every keyword
-    for id in matchingIDs[0]:
+    for tID in matchingIDs[0]:
+        allPresent = True
         for idList in matchingIDs[1:]:
-            if id not in idList:
+            if tID not in idList:
                 allPresent = False
                 break
         if allPresent:
-            searchResults.append(id)
+            searchResults.append(tID)
 
+    print("IDs:", matchingIDs)
     return searchResults
 

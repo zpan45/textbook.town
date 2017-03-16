@@ -6,8 +6,8 @@ from search.functions import countBids, search_by_title
 
 
 def main():
-    print('Bids:', countBids(1))
-    print(search_by_title("i%20hate%20grails"))
+    print('Bids:', countBids(7))
+    print(search_by_title("golf"))
 
 
 

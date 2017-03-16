@@ -53,6 +53,5 @@ def search_by_title(searchString):
         if allPresent:
             searchResults.append(tID)
 
-    print("IDs:", matchingIDs)
     return searchResults
 

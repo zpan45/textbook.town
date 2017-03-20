@@ -6,7 +6,7 @@ from search.functions import countBids, search_by_title, search_by_course, check
 
 
 def main():
-    print('Bids:', countBids(7))
+    print('Bids:', countBids(1))
     print(search_by_title("i%20like"))
     print(search_by_course("CS"))
 

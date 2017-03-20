@@ -11,7 +11,7 @@ import uuid
 
 # Database login information -- uses pymysql as connector --
 # 'mysql+pymysql://user:password@host/database'
-DATABASE_LOGIN_STRING = 'mysql+pymysql://root:password@localhost/elixir'
+DATABASE_LOGIN_STRING = 'mysql+pymysql://root:glhsauce@localhost/elixir'
 
 SERVER = 'http://127.0.0.1:5000/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])     # allowed file extensions
@@ -32,7 +32,7 @@ CORS(app)
 auth = HTTPBasicAuth()
 
 # import helper functions from validate.py
-from validate import validPubYear, stringToDate, validDateString, validMinimumBid
+from validate import validPubYear, stringToDate, validDateString, validBid
 
 
 ###### DEFINE THE DATA MODELS ######
@@ -273,7 +273,7 @@ def add_book():
     rating = int(ratingStr)
 
     # validate minimumBid
-    if validMinimumBid(minimumBidStr):
+    if validBid(minimumBidStr):
         minimumBid = int(minimumBidStr)
     else:
         return jsonify({'status': 'failure', 'message': 'Minimum bid must be a positive integer'})
@@ -333,7 +333,6 @@ def valid_token():
 '''
 'SERVER/book/bid?ceiling=num&textbook=id'
 '''
-
 @app.route('/book/bid', methods=['GET'])
 @auth.login_required
 def place_bid():
@@ -345,12 +344,18 @@ def place_bid():
 
     associatedAuction = Auction.query.filter_by(textbook=textbookID).first()
 
+    # Check if the bid is a positive integer
+    if validBid(ceiling):
+        ceilingInt = int(ceiling)
+    else:
+        return jsonify({'status': 'failure', 'message': 'bid must be a positive integer'})
+
     # if the bid isn't above the minimum, return failure JSON
-    if ceiling < associatedAuction.minimumBid:
+    if ceilingInt < associatedAuction.minimumBid:
         return jsonify({'status': 'failure', 'message': 'bid too low'})
 
     # Create new bid object with reference to appropriate auction and bidder
-    newBid = Bid(ceiling=ceiling, auction=associatedAuction.id, bidder=g.user.id)
+    newBid = Bid(ceiling=ceilingInt, auction=associatedAuction.id, bidder=g.user.id)
 
     db.session.add(newBid)
     db.session.commit()
@@ -358,21 +363,9 @@ def place_bid():
     return jsonify({'status': 'success'})
 
 
-
-###### TEST ENDPOINTS FOR PRACTICE #######
-
-# Testing login required endpoint
-@app.route('/api/json', methods=['POST'])
-@auth.login_required
-def get_json():
-    print('thing' in request.json)
-    print(g.user.username)
-    thing = request.json.get('thing')
-    return jsonify({'thing': thing})
-
-
 ###### HELPER METHODS FOR APP ROUTES ######
 # Can't seem to put these in a separate file, getting some weird circular imports or something so I left them
+
 def allowedFile(filename):
     '''
     Determines if file has a valid extension

@@ -52,7 +52,7 @@ def stringToDate(string):
     return datetime.datetime.strptime(string, '%Y-%m-%d').date()
 
 
-def validMinimumBid(bid):
+def validBid(bid):
     '''
     Minimum bid must be a positive integer
     :param bid: minimumBid as a string

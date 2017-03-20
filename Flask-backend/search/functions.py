@@ -1,6 +1,7 @@
 
 from api import db, Bid, Textbook, Auction
 from sqlalchemy import func
+from validate import getCurrentESTDate
 
 
 def countBids(auctionID):
@@ -42,9 +43,10 @@ def search_by_title(searchString):
     for result in queryResults:
         matchingIDs.append([r.id for r in result])
 
-
     # get all textbooks that contain every keyword
     for tID in matchingIDs[0]:
+        # Check if auctions have closed
+        checkAndModifyAuctionIsCurrent(tID)
         allPresent = True
         for idList in matchingIDs[1:]:
             if tID not in idList:
@@ -53,5 +55,18 @@ def search_by_title(searchString):
         if allPresent:
             searchResults.append(tID)
 
-    return searchResults
+    # filter search results to only include textbooks currently on auction
+    return [tID for tID in searchResults if Auction.query.get(tID).isCurrent]
+
+
+def checkAndModifyAuctionIsCurrent(textbookID):
+    '''
+    Checks if the auction has closed, and updates isCurrent auction property accordingly
+    :param textbookID: ID of textbook
+    :return:
+    '''
+    bookAuction = Auction.query.get(textbookID)
+    if getCurrentESTDate() > bookAuction.closingDate:
+        bookAuction.isCurrent = False
+        db.session.commit()
 

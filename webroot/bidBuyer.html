@@ -1,10 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
+    <title>Place a Bid</title>
+	<!-- Import JS/CSS System Wide Libs -->
+	<!-- Required Global Libs | Full List Maintained in: components/head.html, however HTML import does not exist right now so we need to copy paste, nick researched this for 2 hours with Mark. -->
+		<!-- JS -->
+		<script src="js/mustache.min.js"></script>
+		<script src="js/core.js"></script>
+
+		<!-- JS Lib -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+		<!-- CSS -->
+		<link rel="stylesheet" type="text/css" href="css/core.css">
+
+		<!-- FONT --><!-- TODO: reduce font weight use before production. -->
+		<link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Josefin+Sans:100,100i,300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
 </head>
 <body>
-$END$
+    <div id="top"></div>
+
+    <div id="info"></div>
+    <br>
+    <div id="userbid">
+     <form id="bidform">
+        <span class="form-field">
+            <label for="bid">Bid:</label>
+            <input name="bid" id="bid" type="number" value="" size="40" aria-required="true">
+            <input type="submit" name="postBid" id="postBid" class="button" value="Place Bid">
+        </span>
+     </form>
+    </div>
+
+    <div id="images"></div>
+
+    <div id="stats"></div>
 </body>
+
+<script type="text/javascript">
+////
+// Page Render
+//
+$(function() {
+
+	//Render Top
+	Promise.resolve(render("#top", "tp/head.html", {title: "Place a Bid:"})).then(
+    	menu()
+	);
+
+	// info
+    render("#info", "tp/bookInfo.html", {
+    	title: "Book Information",
+    	t_bg:"#FFFFFF",
+    	t_c: "#C5494C",
+    	img: "img/213kh12kj312k3h1khj3jk12hkj31.png",
+    	side:
+    		`
+    		Book Title<br>
+    		Author'<br>
+    		`,
+    	side_2:
+    		`
+    		blurb<br>
+    		condition<br>
+            other info
+    		`
+    });
+
+    // images
+    render("#images", "tp/threeImg.html", {
+        title: "Pictures of the Book",
+        first: "img/213kh12kj312k3h1khj3jk12hkj31.png",
+        second: "img/213kh12kj312k3h1khj3jk12hkj31.png",
+        third: "img/213kh12kj312k3h1khj3jk12hkj31.png"
+    });
+
+
+});
+
+</script>
 </html>

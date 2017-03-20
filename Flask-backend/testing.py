@@ -2,7 +2,7 @@ __author__ = 'piercesaly'
 
 from api import db, Textbook
 from sqlalchemy import func
-from search.functions import countBids, search_by_title, search_by_course, checkAndModifyAuctionIsCurrent
+from searchfunctions import countBids, search_by_title, search_by_course, checkAndModifyAuctionIsCurrent
 
 
 def main():

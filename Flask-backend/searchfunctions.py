@@ -1,3 +1,4 @@
+__author__ = 'piercesaly'
 
 from api import db, Bid, Textbook, Auction
 from sqlalchemy import func
@@ -56,6 +57,11 @@ def search_by_course(searchString):
 
 
 def _filter_query_results(queryResults):
+    '''
+    Helper method to filter down results to only books that contain all keywords in search
+    :param queryResults: 2d list of all book IDs matching each search keyword
+    :return: list of filtered textbook IDs
+    '''
     matchingIDs = []
     searchResults = []
 
@@ -97,4 +103,8 @@ def checkAndModifyAuctionIsCurrent(textbookID):
 
 
 def currentUserHasAlreadyBidOnTextbook(user, textbookID):
+    pass
+
+
+def collectTextbookSearchResultInfo(textbookID):
     pass

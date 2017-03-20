@@ -31,8 +31,6 @@ db = SQLAlchemy(app)
 CORS(app)
 auth = HTTPBasicAuth()
 
-# import helper functions from validate.py
-from validate import validPubYear, stringToDate, validDateString, validBid
 
 
 ###### DEFINE THE DATA MODELS ######
@@ -116,6 +114,12 @@ class Auction(db.Model):
     salePrice = db.Column(db.Integer)                # sale price, updated each time a bid comes in, starts at 0 if no bids
     isCurrent = db.Column(db.Boolean)                # whether or not auction is open
     closingDate = db.Column(db.Date)                 # closing date (auction ends at midnight ET of this day)
+
+
+# IMPORT HERE TO AVOID CIRCULAR IMPORTS
+from validate import validPubYear, stringToDate, validDateString, validBid
+import searchfunctions as sf
+
 
 
 ###### APP ROUTES (API ENDPOINTS) ######
@@ -361,6 +365,40 @@ def place_bid():
     db.session.commit()
 
     return jsonify({'status': 'success'})
+
+@app.route('/book/search', methods=['GET'])
+def search_for_textbook():
+    if 'q' not in request.args:
+        print('Bad Request')
+        return jsonify({'status': 'failure', 'message': 'bad request'})
+
+    query = request.args.get('q')
+
+    if query == "":
+        # Perform a search for the textbooks with auctions closing the soonest
+        pass
+
+    titleResults = sf.search_by_title(query)
+    courseResults = sf.search_by_course(query)
+
+    print(titleResults, courseResults)
+
+    results = titleResults
+    for tID in (result for result in courseResults if result not in results):
+        results.append(tID)
+
+    print(results)
+
+
+    res = {}
+    a = []
+    for i in range(10):
+        b = {}
+        b[str(i)] = i
+        a.append(b)
+    res['status'] = 'success'
+    res['books'] = a
+    return jsonify(res)
 
 
 ###### HELPER METHODS FOR APP ROUTES ######

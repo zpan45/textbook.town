@@ -339,18 +339,18 @@ def valid_token():
 def place_bid():
     if 'ceiling' not in request.args or 'textbook' not in request.args:
         print('Bad Request')
-        return jsonify({'status': 'failure'})
+        return jsonify({'status': 'failure', 'message': 'bad request'})
     ceiling = request.args.get('ceiling')
     textbookID = request.args.get('textbook')
-    userID = g.user.id
-
-
-    # NEED TO VERIFY THAT THE BID AMOUNT IS ABOVE THE MINIMUM BID
 
     associatedAuction = Auction.query.filter_by(textbook=textbookID).first()
-    auctionID = associatedAuction.id
 
-    newBid = Bid(ceiling=ceiling, auction=auctionID, bidder=userID)
+    # if the bid isn't above the minimum, return failure JSON
+    if ceiling < associatedAuction.minimumBid:
+        return jsonify({'status': 'failure', 'message': 'bid too low'})
+
+    # Create new bid object with reference to appropriate auction and bidder
+    newBid = Bid(ceiling=ceiling, auction=associatedAuction.id, bidder=g.user.id)
 
     db.session.add(newBid)
     db.session.commit()

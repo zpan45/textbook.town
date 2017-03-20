@@ -2,7 +2,7 @@ __author__ = 'piercesaly'
 
 import datetime
 
-UTC_TIME_ADJUSTMENT = 5             # will have to change when daylight savings kicks in
+UTC_TIME_ADJUSTMENT = 4             # will have to change when daylight savings kicks in
 
 def validPubYear(year):
     '''

@@ -25,8 +25,6 @@ def search_by_title(searchString):
     keywords = searchString.split('%20')
 
     queryResults = []
-    matchingIDs = []
-    searchResults = []
 
     # search for keywords separately
     for keyword in keywords:
@@ -34,6 +32,32 @@ def search_by_title(searchString):
 
     # This was a regex that wasn't working
     # results.append(Textbook.query.filter(func.lower(Textbook.title).op('regexp')(r'\b{}\b'.format(keyword.lower()))).all())
+
+    return _filter_query_results(queryResults)
+
+
+def search_by_course(searchString):
+    '''
+    Searches database for textbooks by course.
+    For best matching, query with a space between subject and course code
+    :param searchString: query entered by the user (separated by %20 instead of spaces)
+    :return: List of textbook ids that match search criteria
+    '''
+    # tokenize keywords
+    keywords = searchString.split('%20')
+
+    queryResults = []
+
+    # search for keywords separately
+    for keyword in keywords:
+        queryResults.append(Textbook.query.filter(func.lower(Textbook.course).like("%" + keyword.lower() + "%")).all())
+
+    return _filter_query_results(queryResults)
+
+
+def _filter_query_results(queryResults):
+    matchingIDs = []
+    searchResults = []
 
     # If no textbook matches any of the keywords
     if len(queryResults) == 0:
@@ -46,7 +70,6 @@ def search_by_title(searchString):
     # get all textbooks that contain every keyword
     for tID in matchingIDs[0]:
         # Check if auctions have closed
-        checkAndModifyAuctionIsCurrent(tID)
         allPresent = True
         for idList in matchingIDs[1:]:
             if tID not in idList:
@@ -56,7 +79,9 @@ def search_by_title(searchString):
             searchResults.append(tID)
 
     # filter search results to only include textbooks currently on auction
-    return [tID for tID in searchResults if Auction.query.get(tID).isCurrent]
+    # return [tID for tID in searchResults if Auction.query.get(tID).isCurrent]
+
+    return searchResults
 
 
 def checkAndModifyAuctionIsCurrent(textbookID):
@@ -70,3 +95,6 @@ def checkAndModifyAuctionIsCurrent(textbookID):
         bookAuction.isCurrent = False
         db.session.commit()
 
+
+def currentUserHasAlreadyBidOnTextbook(user, textbookID):
+    pass

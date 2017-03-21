@@ -390,6 +390,7 @@ def search_for_textbook():
 
         return jsonify({'status': 'success', 'books': bookList})
 
+    # SHOULD WE ORDER SEARCH RESULTS BY CLOSING DATE NO MATTER WHAT???
 
     titleResults = sf.search_by_title(query)
     courseResults = sf.search_by_course(query)

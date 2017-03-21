@@ -11,7 +11,7 @@ import uuid
 
 # Database login information -- uses pymysql as connector --
 # 'mysql+pymysql://user:password@host/database'
-DATABASE_LOGIN_STRING = 'mysql+pymysql://root:password@localhost/elixir'
+DATABASE_LOGIN_STRING = 'mysql+pymysql://root:glhsauce@localhost/elixir'
 
 SERVER = 'http://127.0.0.1:5000/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])     # allowed file extensions
@@ -374,13 +374,17 @@ def search_for_textbook():
     Searches for textbook based on query string from get request
     @ SERVER/book/search?q=search%20string
     '''
-    if 'q' not in request.args:
-        print('Bad Request')
-        return jsonify({'status': 'failure', 'message': 'bad request'})
-
-    query = request.args.get('q')
 
     bookList = []
+
+    if 'q' not in request.args:
+        for book in sf.search_by_next_closing():
+            bookList.append(sf.collectTextbookSearchResultInfo(book))
+
+        return jsonify({'status': 'success', 'books': bookList})
+
+    query = request.args.get('q')
+    print(query)
 
     # If search string is blank, return soonest closing textbooks
     if query == '' or query == ' ':

@@ -32,7 +32,6 @@ CORS(app)
 auth = HTTPBasicAuth()
 
 
-
 ###### DEFINE THE DATA MODELS ######
 class User(db.Model):
     '''

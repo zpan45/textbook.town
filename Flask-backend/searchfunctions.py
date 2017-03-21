@@ -107,9 +107,9 @@ def checkAndModifyAuctionIsCurrent(textbookID):
 
 def userHasAlreadyBidOnTextbook(userID, textbookID):
     '''
-    returns whether or not the specified
-    :param userID:
-    :param textbookID:
+    Returns whether or not specified user has already bid on specified textbook
+    :param userID: id of user
+    :param textbookID: id of textbook
     :return:
     '''
     auction = Auction.query.filter_by(textbook=textbookID).first()
@@ -119,7 +119,13 @@ def userHasAlreadyBidOnTextbook(userID, textbookID):
 
 
 def userOwnsTextbook(userID, textbookID):
-    pass
+    '''
+    Returns whether or not specified user is the seller of the specified textbook
+    :param userID: id of user
+    :param textbookID: id of textbook
+    :return:
+    '''
+    return userID == Textbook.query.get(textbookID).seller
 
 
 def collectTextbookSearchResultInfo(textbookID):

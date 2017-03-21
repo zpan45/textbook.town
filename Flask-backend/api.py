@@ -333,12 +333,14 @@ def valid_token():
     return jsonify({'status': 'success'})
 
 
-'''
-'SERVER/book/bid?ceiling=num&textbook=id'
-'''
 @app.route('/book/bid', methods=['GET'])
 @auth.login_required
 def place_bid():
+    '''
+    Backend endpoint to place a bid on a textbook
+    @ SERVER/book/bid?ceiling=num&textbook=id
+    :return:
+    '''
     if 'ceiling' not in request.args or 'textbook' not in request.args:
         print('Bad Request')
         return jsonify({'status': 'failure', 'message': 'bad request'})
@@ -365,18 +367,18 @@ def place_bid():
 
     return jsonify({'status': 'success'})
 
-'''
-'SERVER/book/search?q=search%20string'
-'''
+
 @app.route('/book/search', methods=['GET'])
 def search_for_textbook():
+    '''
+    Searches for textbook based on query string from get request
+    @ SERVER/book/search?q=search%20string
+    '''
     if 'q' not in request.args:
         print('Bad Request')
         return jsonify({'status': 'failure', 'message': 'bad request'})
 
     query = request.args.get('q')
-
-    print(query)
 
     if query == '' or query == '%20':
         # Perform a search for the textbooks with auctions closing the soonest
@@ -401,6 +403,29 @@ def search_for_textbook():
         bookList.append(bookData)
 
     return jsonify({'status': 'success', 'books': bookList})
+
+
+@app.route('/book/topbidders', methods=['GET'])
+def get_top3_bids():
+    '''
+    Get information on top 3 bidders given a textbook id in a GET request
+    @ SERVER/book/topbidders?id=textbookID
+    :return:
+    '''
+    if 'id' not in request.args:
+        print('Bad Request')
+        return jsonify({'status': 'failure', 'message': 'bad request'})
+
+    textbookID = request.args.get('id')
+    top3 = sf.determineTop3BidsAfterClose(textbookID)
+
+    topBids = []
+    for bid in top3:
+        user = User.query.get(bid.bidder)
+        topBids.append({'bid': bid.ceiling, 'user_name': user.username, 'profile_link': user.contact})
+
+    return jsonify({'status': 'success', 'bids': topBids})
+
 
 
 ###### HELPER METHODS FOR APP ROUTES ######

@@ -74,8 +74,6 @@ def _filter_query_results(queryResults):
     for result in queryResults:
         matchingIDs.append([r.id for r in result])
 
-    print(matchingIDs)
-
     # get all textbooks that contain every keyword
     for tID in matchingIDs[0]:
         # Check if auctions have closed
@@ -151,3 +149,16 @@ def collectTextbookSearchResultInfo(textbookID):
     data['price'] = auction.minimumBid
 
     return data
+
+
+def determineTop3BidsAfterClose(textbookID):
+    auctionID = Auction.query.filter_by(textbook=textbookID).first().id
+    allBids = Bid.query.filter_by(auction=auctionID).all()
+    allBids.sort(key=lambda bid: bid.ceiling, reverse=True)
+    bids = [b.ceiling for b in allBids]
+    print(bids)
+    if len(allBids) <= 3:
+        return allBids
+    else:
+        return allBids[:3]
+

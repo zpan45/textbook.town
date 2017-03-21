@@ -2,7 +2,7 @@ __author__ = 'piercesaly'
 
 import datetime
 
-UTC_TIME_ADJUSTMENT = 5             # will have to change when daylight savings kicks in
+UTC_TIME_ADJUSTMENT = 4             # will have to change when daylight savings kicks in
 
 def validPubYear(year):
     '''
@@ -51,8 +51,17 @@ def stringToDate(string):
     '''
     return datetime.datetime.strptime(string, '%Y-%m-%d').date()
 
+def dateToString(dateObj):
+    '''
+    Converts dateString 'yyyy-mm-dd' to a date object
+    :param string: string to convert to date
+    :return: date object
+    '''
 
-def validMinimumBid(bid):
+    return dateObj.strftime("%b %d, %Y").replace(" 0", " ")
+
+
+def validBid(bid):
     '''
     Minimum bid must be a positive integer
     :param bid: minimumBid as a string

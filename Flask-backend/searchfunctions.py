@@ -142,14 +142,14 @@ def userHasAlreadyBidOnTextbook(userID, textbookID):
     return True if previousBid is not None else False
 
 
-def userOwnsTextbook(userID, textbookID):
+def userIsBuyerOfTextbook(userID, textbookID):
     '''
     Returns whether or not specified user is the seller of the specified textbook
     :param userID: id of user
     :param textbookID: id of textbook
     :return:
     '''
-    return userID == Textbook.query.get(textbookID).seller
+    return userID != Textbook.query.get(textbookID).seller
 
 
 def collectTextbookSearchResultInfo(textbookID):

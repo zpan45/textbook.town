@@ -11,7 +11,7 @@ import uuid
 
 # Database login information -- uses pymysql as connector --
 # 'mysql+pymysql://user:password@host/database'
-DATABASE_LOGIN_STRING = 'mysql+pymysql://root:password@localhost/elixir'
+DATABASE_LOGIN_STRING = 'mysql+pymysql://root:glhsauce@localhost/elixir'
 
 SERVER = 'http://127.0.0.1:5000/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])     # allowed file extensions
@@ -438,17 +438,22 @@ def get_top3_bids():
     return jsonify({'status': 'success', 'bids': topBids})
 
 
-@app.route('/book/buyorsell', methods=['GET'])
+@app.route('/book/buyercheck', methods=['GET'])
 @auth.login_required
 def user_is_buyer():
     '''
     To determine whether the current logged-in user is a buyer or seller of the specified textbook
-    @ SERVER/book/buyorsell?id=textbookID
+    @ SERVER/book/buyercheck?id=textbookID
     :return:
     '''
+    if 'id' not in request.args:
+        print('Bad Request')
+        return jsonify({'status': 'failure', 'message': 'bad request'})
 
-    # isBuyer = sf.userOwnsTextbook(userID=g.user.)
-    pass
+    textbookID = request.args.get('id')
+    isBuyer = sf.userIsBuyerOfTextbook(userID=g.user.id, textbookID=textbookID)
+
+    return jsonify({'status': 'success', 'isBuyer': isBuyer})
 
 
 

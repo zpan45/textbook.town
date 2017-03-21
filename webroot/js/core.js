@@ -79,3 +79,11 @@ function menu(){
 
 
 }
+
+//Render Top 3 Book Bids
+function renderTopBooks(bl){
+	$("#bidList").html("");
+	$.each(bl, function(i, book){
+		render("#bidList", "tp/bookBid.html", {bid: bookBid.bid, username: bookBid.user_name, profile: bookBid.profile_link}, "APPEND_MODE")
+	});
+}

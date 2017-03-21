@@ -22,10 +22,11 @@ def search_by_title(searchString):
     :param searchString: query entered by the user (separated by %20 instead of spaces)
     :return: List of textbook ids that match search criteria
     '''
-    # tokenize keywords
-    keywords = searchString.split('%20')
+    # tokenize keywords (split at spaces because flask converts %20 to spaces automatically)
+    keywords = searchString.split()
 
     queryResults = []
+
 
     # search for keywords separately
     for keyword in keywords:
@@ -44,8 +45,8 @@ def search_by_course(searchString):
     :param searchString: query entered by the user (separated by %20 instead of spaces)
     :return: List of textbook ids that match search criteria
     '''
-    # tokenize keywords
-    keywords = searchString.split('%20')
+    # tokenize keywords (split at spaces because flask converts %20 to spaces automatically)
+    keywords = searchString.split()
 
     queryResults = []
 
@@ -72,6 +73,8 @@ def _filter_query_results(queryResults):
 
     for result in queryResults:
         matchingIDs.append([r.id for r in result])
+
+    print(matchingIDs)
 
     # get all textbooks that contain every keyword
     for tID in matchingIDs[0]:

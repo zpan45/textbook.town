@@ -377,6 +377,8 @@ def search_for_textbook():
 
     query = request.args.get('q')
 
+    print(query)
+
     if query == '' or query == '%20':
         # Perform a search for the textbooks with auctions closing the soonest
         pass

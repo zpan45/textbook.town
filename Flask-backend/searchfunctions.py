@@ -105,11 +105,29 @@ def checkAndModifyAuctionIsCurrent(textbookID):
         db.session.commit()
 
 
-def currentUserHasAlreadyBidOnTextbook(user, textbookID):
+def userHasAlreadyBidOnTextbook(userID, textbookID):
+    '''
+    returns whether or not the specified
+    :param userID:
+    :param textbookID:
+    :return:
+    '''
+    auction = Auction.query.filter_by(textbook=textbookID).first()
+    previousBid = Bid.query.filter_by(auction=auction.id, bidder=userID).first()
+
+    return True if previousBid is not None else False
+
+
+def userOwnsTextbook(userID, textbookID):
     pass
 
 
 def collectTextbookSearchResultInfo(textbookID):
+    '''
+    Returns a dictionary with the proper textbook info for search result JSON
+    :param textbookID: id of textbook
+    :return: dictionary
+    '''
     data = {}
 
     textbook = Textbook.query.get(textbookID)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
-from flask import Flask, abort, request, jsonify, g, url_for, send_from_directory
-from flask_cors import CORS, cross_origin
+from flask import Flask, abort, request, jsonify, g, send_from_directory
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth
 from passlib.apps import custom_app_context as pwd_context

@@ -51,6 +51,15 @@ def stringToDate(string):
     '''
     return datetime.datetime.strptime(string, '%Y-%m-%d').date()
 
+def dateToString(dateObj):
+    '''
+    Converts dateString 'yyyy-mm-dd' to a date object
+    :param string: string to convert to date
+    :return: date object
+    '''
+
+    return dateObj.strftime("%b %d, %Y").replace(" 0", "")
+
 
 def validBid(bid):
     '''

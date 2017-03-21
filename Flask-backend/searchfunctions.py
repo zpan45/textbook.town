@@ -1,8 +1,8 @@
 __author__ = 'piercesaly'
 
-from api import db, Bid, Textbook, Auction
+from api import db, Bid, Textbook, Auction, SERVER
 from sqlalchemy import func
-from validate import getCurrentESTDate
+from validate import getCurrentESTDate, dateToString
 
 
 def countBids(auctionID):
@@ -107,4 +107,20 @@ def currentUserHasAlreadyBidOnTextbook(user, textbookID):
 
 
 def collectTextbookSearchResultInfo(textbookID):
-    pass
+    data = {}
+
+    textbook = Textbook.query.get(textbookID)
+
+    data['id'] = textbookID
+    data['title'] = textbook.title
+    data['author'] = textbook.author
+    data['subject'] = textbook.course
+    data['image'] = SERVER + "img/" + textbook.coverPhotoName
+
+    auction = Auction.query.filter_by(textbook=textbookID).first()
+    data['date_closing'] = dateToString(auction.closingDate)
+    data['tag'] = 'Last Day' if getCurrentESTDate() == auction.closingDate else ''
+    data['bids'] = countBids(auction.id)
+    data['price'] = auction.minimumBid
+
+    return data

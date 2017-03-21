@@ -366,6 +366,9 @@ def place_bid():
 
     return jsonify({'status': 'success'})
 
+'''
+'SERVER/book/search?q=search%20string'
+'''
 @app.route('/book/search', methods=['GET'])
 def search_for_textbook():
     if 'q' not in request.args:
@@ -374,31 +377,29 @@ def search_for_textbook():
 
     query = request.args.get('q')
 
-    if query == "":
+    if query == '' or query == '%20':
         # Perform a search for the textbooks with auctions closing the soonest
         pass
 
     titleResults = sf.search_by_title(query)
     courseResults = sf.search_by_course(query)
 
-    print(titleResults, courseResults)
-
     results = titleResults
     for tID in (result for result in courseResults if result not in results):
         results.append(tID)
 
-    print(results)
+    # print(titleResults, courseResults)
+    # print(results)
 
+    # IF THERE ARE NO RESULTS, RETURN EMPTY LIST, OR WHAT?
 
-    res = {}
-    a = []
-    for i in range(10):
-        b = {}
-        b[str(i)] = i
-        a.append(b)
-    res['status'] = 'success'
-    res['books'] = a
-    return jsonify(res)
+    bookList = []
+
+    for book in results:
+        bookData = sf.collectTextbookSearchResultInfo(book)
+        bookList.append(bookData)
+
+    return jsonify({'status': 'success', 'books': bookList})
 
 
 ###### HELPER METHODS FOR APP ROUTES ######

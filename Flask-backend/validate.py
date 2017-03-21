@@ -58,7 +58,7 @@ def dateToString(dateObj):
     :return: date object
     '''
 
-    return dateObj.strftime("%b %d, %Y").replace(" 0", "")
+    return dateObj.strftime("%b %d, %Y").replace(" 0", " ")
 
 
 def validBid(bid):

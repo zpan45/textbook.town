@@ -333,7 +333,7 @@ def valid_token():
     return jsonify({'status': 'success'})
 
 
-@app.route('/book/bid', methods=['GET'])
+@app.route('/book/bid', methods=['POST'])
 @auth.login_required
 def place_bid():
     '''
@@ -341,11 +341,12 @@ def place_bid():
     @ SERVER/book/bid?ceiling=num&textbook=id
     :return:
     '''
-    if 'ceiling' not in request.args or 'textbook' not in request.args:
+    if 'bid' not in request.json or 'textbook' not in request.json:
         print('Bad Request')
         return jsonify({'status': 'failure', 'message': 'bad request'})
-    ceiling = request.args.get('ceiling')
-    textbookID = request.args.get('textbook')
+
+    ceiling = request.json.get('bid')
+    textbookID = request.json.get('textbook')
 
     associatedAuction = Auction.query.filter_by(textbook=textbookID).first()
 
@@ -437,6 +438,37 @@ def get_top3_bids():
     return jsonify({'status': 'success', 'bids': topBids})
 
 
+@app.route('/book/buyorsell', methods=['GET'])
+@auth.login_required
+def user_is_buyer():
+    '''
+    To determine whether the current logged-in user is a buyer or seller of the specified textbook
+    @ SERVER/book/buyorsell?id=textbookID
+    :return:
+    '''
+
+    # isBuyer = sf.userOwnsTextbook(userID=g.user.)
+    pass
+
+
+
+@app.route('/book/hasbid', methods=['GET'])
+@auth.login_required
+def user_has_bid():
+    '''
+    To determine whether the current logged-in user has already bid on the specified textbook
+    @ SERVER/book/hasbid?id=textbookID
+    :return:
+    '''
+    if 'id' not in request.args:
+        print('Bad Request')
+        return jsonify({'status': 'failure', 'message': 'bad request'})
+
+    textbookID = request.args.get('id')
+    hasBid = sf.userHasAlreadyBidOnTextbook(userID=g.user.id, textbookID=textbookID)
+
+    return jsonify({'status': 'success', 'hasBid': hasBid})
+
 
 ###### HELPER METHODS FOR APP ROUTES ######
 # Can't seem to put these in a separate file, getting some weird circular imports or something so I left them
@@ -463,7 +495,6 @@ def uniqueFileName(filename):
     while os.path.isfile(os.path.join(app.config['UPLOAD_FOLDER'], filename)):
         filename = secure_filename(str(uuid.uuid4()) + filename[-4:])
     return filename
-
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)

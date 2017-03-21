@@ -184,7 +184,8 @@ def determineTop3BidsAfterClose(textbookID):
     :return: 3 element list containing top 3 bids
     '''
 
-    # MAYBE DEAL WITH TOP BID = 2ND BID CEILING + CONSTANT???
+    # winning bidder pays second bidder ceiling + this amount (or their ceiling, whatever's lower)
+    WINNING_INCREMENT = 5
 
     # get corresponding auction ID
     auctionID = Auction.query.filter_by(textbook=textbookID).first().id
@@ -192,6 +193,13 @@ def determineTop3BidsAfterClose(textbookID):
     # get all bids on the auction and sort by bid ceiling
     allBids = Bid.query.filter_by(auction=auctionID).all()
     allBids.sort(key=lambda bid: bid.ceiling, reverse=True)
+
+    if len(allBids) < 2:
+        return allBids
+
+    secondBidPlusIncrement = allBids[1].ceiling + WINNING_INCREMENT
+    if (secondBidPlusIncrement < allBids[0].ceiling):
+        allBids[0].ceiling = secondBidPlusIncrement
 
     # bids = [b.ceiling for b in allBids]
     # print(bids)

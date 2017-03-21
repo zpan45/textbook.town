@@ -380,9 +380,16 @@ def search_for_textbook():
 
     query = request.args.get('q')
 
-    if query == '' or query == '%20':
+    bookList = []
+
+    # If search string is blank, return soonest closing textbooks
+    if query == '' or query == ' ':
         # Perform a search for the textbooks with auctions closing the soonest
-        pass
+        for book in sf.search_by_next_closing():
+            bookList.append(sf.collectTextbookSearchResultInfo(book))
+
+        return jsonify({'status': 'success', 'books': bookList})
+
 
     titleResults = sf.search_by_title(query)
     courseResults = sf.search_by_course(query)
@@ -396,11 +403,8 @@ def search_for_textbook():
 
     # IF THERE ARE NO RESULTS, RETURN EMPTY LIST, OR WHAT?
 
-    bookList = []
-
     for book in results:
-        bookData = sf.collectTextbookSearchResultInfo(book)
-        bookList.append(bookData)
+        bookList.append(sf.collectTextbookSearchResultInfo(book))
 
     return jsonify({'status': 'success', 'books': bookList})
 

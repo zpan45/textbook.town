@@ -91,7 +91,33 @@ def _filter_query_results(queryResults):
     return searchResults
 
 
-def checkAndModifyAuctionIsCurrent(textbookID):
+def search_by_next_closing():
+    '''
+    Get list of current textbooks sorted by soonest closing date first
+    :return: List of textbook IDs sorted by closing Date
+    '''
+    updateIsCurrentForAllAuctions()
+    currentAuctions = Auction.query.filter_by(isCurrent=True).all()
+    currentAuctions.sort(key=lambda auc: auc.closingDate)
+    # dates = [a.closingDate for a in currentAuctions]
+    # print(dates)
+
+    # get corresponding textbookIDs
+    return [auction.textbook for auction in currentAuctions]
+
+def updateIsCurrentForAllAuctions():
+    '''
+    Updates the isCurrent property for all auctions in the database
+    :return: None
+    '''
+    for auction in Auction.query.filter_by(isCurrent=True):
+        if auction.closingDate < getCurrentESTDate():
+            auction.isCurrent = False
+
+    db.session.commit()
+
+
+def updateIsCurrent(textbookID):
     '''
     Checks if the auction has closed, and updates isCurrent auction property accordingly
     :param textbookID: ID of textbook
@@ -152,11 +178,24 @@ def collectTextbookSearchResultInfo(textbookID):
 
 
 def determineTop3BidsAfterClose(textbookID):
+    '''
+    Returns 3-element list of the top 3 bids on an auction
+    :param textbookID: ID of textbook
+    :return: 3 element list containing top 3 bids
+    '''
+
+    # MAYBE DEAL WITH TOP BID = 2ND BID CEILING + CONSTANT???
+
+    # get corresponding auction ID
     auctionID = Auction.query.filter_by(textbook=textbookID).first().id
+
+    # get all bids on the auction and sort by bid ceiling
     allBids = Bid.query.filter_by(auction=auctionID).all()
     allBids.sort(key=lambda bid: bid.ceiling, reverse=True)
-    bids = [b.ceiling for b in allBids]
-    print(bids)
+
+    # bids = [b.ceiling for b in allBids]
+    # print(bids)
+
     if len(allBids) <= 3:
         return allBids
     else:

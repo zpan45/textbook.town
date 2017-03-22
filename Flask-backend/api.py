@@ -90,6 +90,9 @@ class Textbook(db.Model):
     seller = db.Column(db.Integer)                  # id of the seller
     auction = db.Column(db.Integer)                 # id of the auction
 
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 
 class Bid(db.Model):
     '''
@@ -473,6 +476,24 @@ def user_has_bid():
     hasBid = sf.userHasAlreadyBidOnTextbook(userID=g.user.id, textbookID=textbookID)
 
     return jsonify({'status': 'success', 'hasBid': hasBid})
+
+
+@app.route('/book/info', methods=['GET'])
+def buyer_page_info():
+    '''
+    Serve book data to front-end buyer view of textbook page
+    @ SERVER/book/info?id=textbookID
+    :return:
+    '''
+    if 'id' not in request.args:
+        print('Bad Request')
+        return jsonify({'status': 'failure', 'message': 'bad request'})
+
+    textbookID = request.args.get('id')
+
+    return sf.jsonifyBuyerViewResponse(textbookID)
+
+
 
 
 ###### HELPER METHODS FOR APP ROUTES ######

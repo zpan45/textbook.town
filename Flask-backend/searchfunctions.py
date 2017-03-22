@@ -1,6 +1,7 @@
 __author__ = 'piercesaly'
 
 from api import db, Bid, Textbook, Auction, SERVER
+from flask import jsonify
 from sqlalchemy import func
 from validate import getCurrentESTDate, dateToString
 
@@ -209,3 +210,30 @@ def determineTop3BidsAfterClose(textbookID):
     else:
         return allBids[:3]
 
+
+def jsonifyBuyerViewResponse(textbookID):
+    book = Textbook.query.get(textbookID)
+    res = book.as_dict()
+
+    print('coverPhotoName' in res)
+
+    print(res['coverPhotoName'])
+
+    del res['coverPhotoName']
+    del res['bestPhotoName']
+    del res['worstPhotoName']
+    del res['averagePhotoName']
+
+    res['coverPhoto'] = SERVER + "img/" + book.coverPhotoName
+    res['bestPhoto'] = SERVER + "img/" + book.bestPhotoName
+    res['worstPhoto'] = SERVER + "img/" + book.worstPhotoName
+    res['averagePhoto'] = SERVER + "img/" + book.averagePhotoName
+
+    res['status'] = 'success'
+
+    correspondingAuction = Auction.query.get(book.auction)
+    res['closingDate'] = dateToString(correspondingAuction.closingDate)
+    res['minimumBid'] = correspondingAuction.minimumBid
+    res['isCurrent'] = correspondingAuction.isCurrent
+
+    return jsonify(res)

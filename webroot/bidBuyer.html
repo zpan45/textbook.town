@@ -42,16 +42,41 @@ $(function() {
     token = getCookie("session");
 
     if ( token != null){
-        $.get('http://'+ token + '@127.0.0.1:5000/book/buyercheck?id='+id, function(res){
-            res = $parseJSON(res)
-            isbuyer = res;
-        });
-     }
+       	$.ajax({
+		    type: 'GET',
+		    url: 'http://127.0.0.1:5000/book/buyercheck?id=' + id,
+		    headers: {
+			    "Authorization": "Basic " + btoa(token + ":" + "")
+  		    },
+		    success: function(res){
 
-    $.get('http://'+ token + '@127.0.0.1:5000/book/hasbid?id='+id', function(res){
-        res = parseJSON(res)
-        hasbid = res;
-    });
+			    //Parse reply data
+			    if(res.status == 'success'){
+                    res = $parseJSON(res)
+                    isbuyer = res;
+			    }
+
+		    }
+	    });
+    }
+
+
+    $.ajax({
+		type: 'GET',
+		url: 'http://127.0.0.1:5000/book/buyercheck?id='+id,
+		headers: {
+			"Authorization": "Basic " + btoa(token + ":" + "")
+  		},
+		success: function(res){
+
+			//Parse reply data
+			if(res.status == 'success'){
+                res = $parseJSON(res)
+                hasbid = res;
+			}
+
+		}
+	});
 
     if (isbuyer == false){
          window.location.replace("index.html");
@@ -60,7 +85,7 @@ $(function() {
     $.get('http://127.0.0.1:5000/book/info?id='+id, function(res){
 		res = $.parseJSON(res)
 		info = res;
-	   });
+	});
 
 	//Render Top
 	Promise.resolve(render("#top", "tp/head.html", {title: "Place a Bid:"})).then(
@@ -72,8 +97,8 @@ $(function() {
     	title: "Book Information",
     	t_bg:"#FFFFFF",
     	t_c: "#C5494C",
-    	img: info.books[1].image,
-    	side: info.books[1].title,
+    	img: info.image,
+    	side: info.title,
     	side_2:
     		`
     		blurb<br>
@@ -92,9 +117,9 @@ $(function() {
     // images
     render("#images", "tp/threeImg.html", {
         title: "Pictures of the Book",
-        first: info.books[1].image,
-        second: info.books[1].image,
-        third: info.books[1].image
+        first: info.image,
+        second: info.image,
+        third: info.image
     });
 
 

@@ -1,9 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
+<!-- Page Wide Settings -->
 <head>
-  <!-- Page Title -->
-  <title>Textbook Town - Make Your Sale</title>
-  <!-- Import JS/CSS System Wide Libs -->
+
+	<!-- Page Title -->
+	<title>Textbook Town - Make Your Sale</title>
+
+	<!-- Import JS/CSS System Wide Libs -->
 	<!-- Required Global Libs | Full List Maintained in: components/head.html, however HTML import does not exist right now so we need to copy paste, nick researched this for 2 hours with Mark. -->
 		<!-- JS -->
 		<script src="js/mustache.min.js"></script>
@@ -21,69 +25,48 @@
 
 </head>
 
-
 <!-- Client Facing Content-->
 <body>
 
 	<!-- Menu and Top Section Container -->
 	<div id="top"></div>
 
+	<!-- Display Books -->
+	<div id="bidList">
+	</div>
 </body>
+</html>
 
-
-<script>
+<script type="text/javascript">
 
 ////
 // Page Render
 //
 $(function() {
+
 	//Chained rendering for nested items
-	Promise.resolve(render("#top", "tp/head.html", {title: "Textbook Town - Make Your Sale"})).then(
-    	render("#menu", "tp/menu.html", {auth_action: "#", auth_link: "Login"})
+	Promise.resolve(render("#top", "tp/head.html", {title: "Make Your Sale:"})).then(
+    	menu()
 	);
 
-  $.ajax({
-    url: 'api/topBids.java',
-    dataType: 'json'
-    success: function(data)
-    {renderTopBooks(data.bidList);}
-  })
+	$.ajax({
+		//type: 'GET'
+		url: 'api/sellerInfo.java'//'http://127.0.0.1:5000/book/sellerInfo?id=textbookID'
+		//headers: {
+	  //    "Authorization": "Basic " + btoa(token + ":" + "")
+	  //      },
+		dataType: 'json',
+		success: function(res){
+
+			//Parse reply data
+			if(res.status == 'success'){
+				renderBidList(data.bids); //or something like this
+			}
+			else {
+				alert("Access Denied.")
+			}
+		}
+	});
 
 });
 </script>
-
-
-<script type="text/javascript">
-$(function() {
-
-
-  //Get Token
-  token = getCookie("session");
-
-  //If unset
-  if (token == null){
-      window.location.replace("login.html");
-  }
-
-  $.ajax({
-    type: 'POST',
-    url: 'http://127.0.0.1:5000/login/check',
-    data: '{"token": "'+token+'"}',
-    contentType:"application/json",
-    dataType: 'json',
-    success: function(res){
-        if(res.status != 'success'){
-          window.location.replace("login.html");
-        }
-    },
-    failure: function(res){
-      window.location.replace("login.html");
-    }
-  });
-});
-</script>
-
-
-
-
-</html>

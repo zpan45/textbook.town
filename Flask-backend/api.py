@@ -11,7 +11,7 @@ import uuid
 
 # Database login information -- uses pymysql as connector --
 # 'mysql+pymysql://user:password@host/database'
-DATABASE_LOGIN_STRING = 'mysql+pymysql://root:glhsauce@localhost/elixir'
+DATABASE_LOGIN_STRING = 'mysql+pymysql://root:password@localhost/elixir'
 
 SERVER = 'http://127.0.0.1:5000/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])     # allowed file extensions
@@ -351,6 +351,14 @@ def place_bid():
     ceiling = request.json.get('bid')
     textbookID = request.json.get('textbook')
 
+    # extra safeguards against misuse of website
+    if sf.userHasAlreadyBidOnTextbook(g.user.id, textbookID):
+        return jsonify({'status': 'failure', 'message': 'only one bid is allowed per textbook'})
+
+    if not sf.userIsBuyerOfTextbook(g.user.id, textbookID):
+        return jsonify({'status': 'failure', 'message': 'you cannot bid on your own textbook'})
+
+
     associatedAuction = Auction.query.filter_by(textbook=textbookID).first()
 
     # Check if the bid is a positive integer
@@ -419,28 +427,6 @@ def search_for_textbook():
     return jsonify({'status': 'success', 'books': bookList})
 
 
-@app.route('/book/topbidders', methods=['GET'])
-def get_top3_bids():
-    '''
-    Get information on top 3 bidders given a textbook id in a GET request
-    @ SERVER/book/topbidders?id=textbookID
-    :return:
-    '''
-    if 'id' not in request.args:
-        print('Bad Request')
-        return jsonify({'status': 'failure', 'message': 'bad request'})
-
-    textbookID = request.args.get('id')
-    top3 = sf.determineTop3BidsAfterClose(textbookID)
-
-    topBids = []
-    for bid in top3:
-        user = User.query.get(bid.bidder)
-        topBids.append({'bid': bid.ceiling, 'user_name': user.username, 'profile_link': user.contact})
-
-    return jsonify({'status': 'success', 'bids': topBids})
-
-
 @app.route('/book/buyercheck', methods=['GET'])
 @auth.login_required
 def user_is_buyer():
@@ -459,14 +445,13 @@ def user_is_buyer():
     return jsonify({'status': 'success', 'isBuyer': isBuyer})
 
 
-
 @app.route('/book/hasbid', methods=['GET'])
 @auth.login_required
 def user_has_bid():
     '''
     To determine whether the current logged-in user has already bid on the specified textbook
     @ SERVER/book/hasbid?id=textbookID
-    :return:
+    :return: JSON with all book data
     '''
     if 'id' not in request.args:
         print('Bad Request')
@@ -481,17 +466,42 @@ def user_has_bid():
 @app.route('/book/info', methods=['GET'])
 def buyer_page_info():
     '''
-    Serve book data to front-end buyer view of textbook page
+    Serve book data to front-end seller view of textbook page
     @ SERVER/book/info?id=textbookID
-    :return:
+    :return: JSON with all book data (includes top 3 bids if auction is closed)
     '''
     if 'id' not in request.args:
         print('Bad Request')
         return jsonify({'status': 'failure', 'message': 'bad request'})
 
     textbookID = request.args.get('id')
+    sf.updateIsCurrent(textbookID)
 
     return sf.jsonifyBuyerViewResponse(textbookID)
+
+
+@app.route('/book/sellerInfo', methods=['GET'])
+@auth.login_required
+def seller_page_info():
+    '''
+    Serve book data to front-end buyer view of textbook page
+    token @ SERVER/book/info?id=textbookID
+    :return:
+    '''
+
+    if 'id' not in request.args:
+        print('Bad Request')
+        return jsonify({'status': 'failure', 'message': 'bad request'})
+
+    textbookID = request.args.get('id')
+    sf.updateIsCurrent(textbookID)
+
+    # If the user does not own the textbook, return failure JSON
+    if sf.userIsBuyerOfTextbook(g.user.id, textbookID):
+        return jsonify({"status": "failure", "message": "you are not the seller of this book"})
+
+    # else return all the info to display the page
+    return sf.jsonifySellerViewResponse(textbookID)
 
 
 

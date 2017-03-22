@@ -1,6 +1,6 @@
 __author__ = 'piercesaly'
 
-from api import db, Bid, Textbook, Auction, SERVER
+from api import db, Bid, Textbook, Auction, User, SERVER
 from flask import jsonify
 from sqlalchemy import func
 from validate import getCurrentESTDate, dateToString
@@ -145,10 +145,10 @@ def userHasAlreadyBidOnTextbook(userID, textbookID):
 
 def userIsBuyerOfTextbook(userID, textbookID):
     '''
-    Returns whether or not specified user is the seller of the specified textbook
+    Returns whether or not specified user is the buyer of the specified textbook
     :param userID: id of user
     :param textbookID: id of textbook
-    :return:
+    :return: true if user is buyer, false if user is seller
     '''
     return userID != Textbook.query.get(textbookID).seller
 
@@ -215,9 +215,29 @@ def jsonifyBuyerViewResponse(textbookID):
     book = Textbook.query.get(textbookID)
     res = book.as_dict()
 
-    print('coverPhotoName' in res)
+    del res['coverPhotoName']
+    del res['bestPhotoName']
+    del res['worstPhotoName']
+    del res['averagePhotoName']
 
-    print(res['coverPhotoName'])
+    res['coverPhoto'] = SERVER + "img/" + book.coverPhotoName
+    res['bestPhoto'] = SERVER + "img/" + book.bestPhotoName
+    res['worstPhoto'] = SERVER + "img/" + book.worstPhotoName
+    res['averagePhoto'] = SERVER + "img/" + book.averagePhotoName
+
+    res['status'] = 'success'
+
+    correspondingAuction = Auction.query.get(book.auction)
+    res['closingDate'] = dateToString(correspondingAuction.closingDate)
+    res['minimumBid'] = correspondingAuction.minimumBid
+    res['isCurrent'] = correspondingAuction.isCurrent
+
+    return jsonify(res)
+
+
+def jsonifySellerViewResponse(textbookID):
+    book = Textbook.query.get(textbookID)
+    res = book.as_dict()
 
     del res['coverPhotoName']
     del res['bestPhotoName']
@@ -235,5 +255,16 @@ def jsonifyBuyerViewResponse(textbookID):
     res['closingDate'] = dateToString(correspondingAuction.closingDate)
     res['minimumBid'] = correspondingAuction.minimumBid
     res['isCurrent'] = correspondingAuction.isCurrent
+
+    if not correspondingAuction.isCurrent:
+
+        top3 = determineTop3BidsAfterClose(textbookID)
+
+        topBids = []
+        for bid in top3:
+            user = User.query.get(bid.bidder)
+            topBids.append({'bid': bid.ceiling, 'user_name': user.username, 'profile_link': user.contact})
+
+        res['bids'] = topBids
 
     return jsonify(res)

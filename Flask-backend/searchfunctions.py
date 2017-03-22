@@ -111,7 +111,7 @@ def updateIsCurrentForAllAuctions():
     Updates the isCurrent property for all auctions in the database
     :return: None
     '''
-    for auction in Auction.query.filter_by(isCurrent=True):
+    for auction in Auction.query.filter_by(isCurrent=True).all():
         if auction.closingDate < getCurrentESTDate():
             auction.isCurrent = False
 
@@ -125,6 +125,8 @@ def updateIsCurrent(textbookID):
     :return:
     '''
     bookAuction = Auction.query.get(textbookID)
+    if bookAuction is None:
+        return
     if getCurrentESTDate() > bookAuction.closingDate:
         bookAuction.isCurrent = False
         db.session.commit()
@@ -138,6 +140,8 @@ def userHasAlreadyBidOnTextbook(userID, textbookID):
     :return:
     '''
     auction = Auction.query.filter_by(textbook=textbookID).first()
+    if auction is None:
+        return False
     previousBid = Bid.query.filter_by(auction=auction.id, bidder=userID).first()
 
     return True if previousBid is not None else False
@@ -150,7 +154,12 @@ def userIsBuyerOfTextbook(userID, textbookID):
     :param textbookID: id of textbook
     :return: true if user is buyer, false if user is seller
     '''
-    return userID != Textbook.query.get(textbookID).seller
+    book = Textbook.query.get(textbookID)
+
+    if book is None:
+        return False
+
+    return userID != book.seller
 
 
 def collectTextbookSearchResultInfo(textbookID):
@@ -189,7 +198,11 @@ def determineTop3BidsAfterClose(textbookID):
     WINNING_INCREMENT = 5
 
     # get corresponding auction ID
-    auctionID = Auction.query.filter_by(textbook=textbookID).first().id
+    auction = Auction.query.filter_by(textbook=textbookID).first()
+    if auction is None:
+        return []
+
+    auctionID = auction.id
 
     # get all bids on the auction and sort by bid ceiling
     allBids = Bid.query.filter_by(auction=auctionID).all()
@@ -213,6 +226,10 @@ def determineTop3BidsAfterClose(textbookID):
 
 def jsonifyBuyerViewResponse(textbookID):
     book = Textbook.query.get(textbookID)
+
+    if book is None:
+        return jsonify({'status': 'failure', 'message': 'that textbook does not exist'})
+
     res = book.as_dict()
 
     del res['coverPhotoName']
@@ -237,6 +254,10 @@ def jsonifyBuyerViewResponse(textbookID):
 
 def jsonifySellerViewResponse(textbookID):
     book = Textbook.query.get(textbookID)
+
+    if book is None:
+        return jsonify({'status': 'failure', 'message': 'that textbook does not exist'})
+
     res = book.as_dict()
 
     del res['coverPhotoName']

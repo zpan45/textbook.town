@@ -11,7 +11,7 @@ import uuid
 
 # Database login information -- uses pymysql as connector --
 # 'mysql+pymysql://user:password@host/database'
-DATABASE_LOGIN_STRING = 'mysql+pymysql://root:password@localhost/elixir'
+DATABASE_LOGIN_STRING = 'mysql+pymysql://root:glhsauce@localhost/elixir'
 
 SERVER = 'http://127.0.0.1:5000/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])     # allowed file extensions
@@ -351,6 +351,13 @@ def place_bid():
     ceiling = request.json.get('bid')
     textbookID = request.json.get('textbook')
 
+    if Textbook.query.get(textbookID) is None:
+        return jsonify({'status': 'failure', 'message': 'that textbook does not exist'})
+
+
+    sf.updateIsCurrent(textbookID)
+
+
     # extra safeguards against misuse of website
     if sf.userHasAlreadyBidOnTextbook(g.user.id, textbookID):
         return jsonify({'status': 'failure', 'message': 'only one bid is allowed per textbook'})
@@ -360,6 +367,13 @@ def place_bid():
 
 
     associatedAuction = Auction.query.filter_by(textbook=textbookID).first()
+
+    if associatedAuction is None:
+        return jsonify({'status': 'failure', 'message': 'that textbook does not exist'})
+
+    # if bidding has closed
+    if not associatedAuction.isCurrent:
+        return jsonify({'status': 'failure', 'message': 'bidding is no longer open'})
 
     # Check if the bid is a positive integer
     if validBid(ceiling):
@@ -400,7 +414,7 @@ def search_for_textbook():
     query = request.args.get('q')
 
     # If search string is blank, return soonest closing textbooks
-    if query == '' or query == ' ':
+    if query is None or query == '' or query == ' ':
         # Perform a search for the textbooks with auctions closing the soonest
         for book in sf.search_by_next_closing():
             bookList.append(sf.collectTextbookSearchResultInfo(book))
@@ -496,7 +510,7 @@ def seller_page_info():
     textbookID = request.args.get('id')
     sf.updateIsCurrent(textbookID)
 
-    # If the user does not own the textbook, return failure JSON
+    # If the user is not selling the textbook, return failure JSON
     if sf.userIsBuyerOfTextbook(g.user.id, textbookID):
         return jsonify({"status": "failure", "message": "you are not the seller of this book"})
 

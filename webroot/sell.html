@@ -186,7 +186,7 @@
                 },
                 success: function(res){
                     if(res.status == 'success'){
-                        alert("textbook Posted!");
+                        setCookie("msg", "Your Textbook was Posted!", 500);
                         window.location.href = "dashboard.html";
                     }
                     else{

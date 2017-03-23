@@ -101,4 +101,12 @@ function getQueryVariable(variable){
     return(false);
 }
 
-
+ //Check any queued messages
+ function persistentAlert(){
+   message = getCookie("msg");
+   console.log(message)
+    if(message.length > 2){
+     alert(message);
+    }
+   setCookie("msg", "", -1000000);
+  }

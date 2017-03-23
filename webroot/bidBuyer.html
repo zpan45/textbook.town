@@ -23,7 +23,19 @@
 
     <div id="info"></div>
 
-    <div id="userbid"></div>
+    <div id="userbid">
+      
+        <form id="bidform" name="bidform">
+        <span class="form-field">
+            <label for="bid">Bid:</label>
+            <input name="bid" id="bid" type="number" value="" size="40" area-required="true">
+            <input type="submit" name="postBid" id="postBid" class="button" value="Place Bid">
+        </span>
+        </form>
+
+    </div>
+
+    </div>
 
     <div id="images"></div>
 </body>
@@ -37,137 +49,132 @@
 $(function() {
 
 
-  //Chained rendering for nested items
-  Promise.resolve(render("#top", "tp/head.html", {title: "Sell a Book"})).then(
+  //Render Menu and Page title.
+  Promise.resolve(render("#top", "tp/head.html", {title: "Book Information"})).then(
       menu()
   );
 
-    var id = getQueryVariable("id");
-    var data;
-    var hasbid = false;
-    var isbuyer = true;
-    token = getCookie("session");
+  //Set Global Vars
+  var id = getQueryVariable("id");
+  var data;
+  var hasbid = false;
+  var isbuyer = true;
+  token = getCookie("session");
 
-    console.log(id)
+  //Log book ID
+  console.log(id)
 
-    if ( token != null){
-        $.ajax({
-            type: 'GET',
-            url: 'http://127.0.0.1:5000/book/buyercheck?id=' + id,
-            headers: {
-                "Authorization": "Basic " + btoa(token + ":" + "")
-            },
+  //Provided we have a book ID:
+  if (token != null){
 
+      //Ensure this user is a buyer and not the owner of a book.
+      $.ajax({
+          type: 'GET',
+          url: 'http://127.0.0.1:5000/book/buyercheck?id=' + id,
+          headers: {
+              "Authorization": "Basic " + btoa(token + ":" + "")
+          },
+          success: function(res){
 
+              //If server responds
+              if(res.status == 'success'){
+                  
+                  //Log the user identity 
+                  console.log(res.isBuyer)
 
+                  //If user is seller redirect appropriately. 
+                  if (!res.isBuyer){
+                      window.location.replace("sell.html?id="+id);
+                  }
 
-            success: function(res){
-                //Parse reply data
-                if(res.status == 'success'){
-                    console.log(res.isBuyer)
+                  //Else User is the buyer as we hoped 
+                  else {
 
-                // If user is a seller
-                if (!res.isBuyer){
-                    // redirect to Nicole's page and pass ID
-                    window.location.replace("index.html");
-                }
-
-                // User is a buyer
-                else {
-
-                  $.ajax({
-                    type: 'GET',
-                    url: 'http://127.0.0.1:5000/book/hasbid?id='+id,
-                    headers: {
-                      "Authorization": "Basic " + btoa(token + ":" + "")
+                    //Check if the user has placed a bid already
+                    $.ajax({
+                      type: 'GET',
+                      url: 'http://127.0.0.1:5000/book/hasbid?id='+id,
+                      headers: {
+                          "Authorization": "Basic " + btoa(token + ":" + "")
                       },
 
+                      //On return of the has bid data. 
+                      success: function(res){
+                        
+                        if(res.status == 'success'){
 
-                    success: function(res){
-                      //Parse reply data
-                      if(res.status == 'success'){
-                            hasbid = res.hasBid;
+                              //Has user bid?
+                              hasbid = res.hasBid;
 
-                            $.ajax({
-                              type: 'GET',
-                              url: 'http://127.0.0.1:5000/book/info?id='+id,   
+                              //Query Bid
+                              $.ajax({
+                                type: 'GET',
+                                url: 'http://127.0.0.1:5000/book/info?id='+id,   
+                                //When the book info is treutned
+                                success: function(res){
 
-                              success: function(res){
-                                //Parse reply data
+                                      if(res.status == 'success'){
+                                                
+                                                //Store the data
+                                                data = res;
 
-                                if(res.status == 'success'){
-                                          data = res;
+                                                //Render the Page
+                                                render("#info", "tp/bookInfo.html", {
+                                                  title: "Book Information",
+                                                  t_bg:"#C5494C",
+                                                  t_c: "#C5494C",
+                                                  img: data.coverPhoto,
+                                                  side: data.title,
+                                                  side_2: "by: "+data.author,
+                                                  side_3: "condition: "+data.condition+"%",
+                                                  side_4: "Auction Closes: "+data.closingDate,
+                                                  side_5: "Minimum bad: "+data.minimumBid
+                                                });
 
+                                                if (hasbid == true){
+                                                    $("#userbid").remove();
+                                                }
+                                              
+                                                //Render Images
+                                                render("#images", "tp/threeImg.html", {
+                                                    title: "Pictures of the Book",
+                                                    first: data.bestPhoto,
+                                                    second: data.averagePhoto,
+                                                    third: data.worstPhoto
+                                                });
 
-                                          // info
-                                          render("#info", "tp/bookInfo.html", {
-                                            title: "Book Information",
-                                            t_bg:"#FFFFFF",
-                                            t_c: "#C5494C",
-                                            img: data.coverPhoto,
-                                            side: data.title,
-                                            side_2: "by: "+data.author,
-                                            side_3: "condition: "+data.condition,
-                                            side_4: "Auction Closes: "+data.closingDate,
-                                            side_5: "Minimum bad: "+data.minimumBid
+                                      }
+                                      // Some sort of weird failure--shouldn't happen if people are using the website properly
+                                      else {
+                                          // alert(res.message)
+                                          window.location.replace("dashboard.html")
+                                      }
 
-                                          });
+                                    }
+                              });
 
-                                          if (hasbid == false){
-                                              render("#userbid", "tp/bidform.html");
-                                          }
-                                          if (hasbid == true){
-                                              render("#userbid", "tp/havebid.html");
-                                          }
+                        }
+                      }//End of have you bid query
+                    });
 
-                                          // images
-                                          render("#images", "tp/threeImg.html", {
-                                              title: "Pictures of the Book",
-                                              first: data.bestPhoto,
-                                              second: data.averagePhoto,
-                                              third: data.worstPhoto
-                                          });
+                  }//End user is buyer
+               }
 
-                                }
-                                // Some sort of weird failure--shouldn't happen if people are using the website properly
-                                else {
-                                    // alert(res.message)
-                                    window.location.replace("dashboard.html")
-                                }
+          },
 
-                              }
-                            });
-
-
-
-                      }
-
-                    }
-                  });
-
-                }
-                 }
-
-            },
-
-        error: function(res) {
-            // Redirect to login page
-            console.log("Not authenticated")
-        }
+          //User is not logged in. 
+          error: function(res) {
+              console.log("Not authenticated")
+              window.location.replace("login.html");
+          }
 
 
-        });
-    }
+      });//Call to check buyer
+
+  }//If ID send end.
 
 
-});
-
-</script>
-
-<script type="text/javascript">
- // json to string on submit and post to dummy file
-  $(function() {
-    $('form#bidForm').submit(function(e) {
+ $('form#bidform').submit(function(e) {
       e.preventDefault();
 
       var formData = new FormData(this);
@@ -183,7 +190,7 @@ $(function() {
         url: 'http://127.0.0.1:5000/book/bid',
         data: formData,
         headers: {
-      "Authorization": "Basic " + btoa(token + ":" + "")
+         "Authorization": "Basic " + btoa(token + ":" + "")
         },
         success: function(res){
             if(res.status == 'success'){
@@ -201,6 +208,10 @@ $(function() {
       });
       return false;
     });
+
+
 });
 </script>
+
+
 </html>

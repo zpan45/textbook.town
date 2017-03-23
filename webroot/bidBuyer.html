@@ -177,9 +177,6 @@ $(function() {
  $('form#bidform').submit(function(e) {
       e.preventDefault();
 
-      var formData = new FormData(this);
-      token = getCookie("session");
-
       if (token == null){
           alert("you are not logged in!");
           window.location.replace("login.html")
@@ -188,9 +185,10 @@ $(function() {
       $.ajax({
         type: 'POST',
         url: 'http://127.0.0.1:5000/book/bid',
-        data: formData,
+        data: '{"bid":'+$("#bid").val()+', "textbook": '+id+'}',
+        contentType:"application/json",
         headers: {
-         "Authorization": "Basic " + btoa(token + ":" + "")
+         "Authorization": "Basic " + btoa(token + ":" + ""),
         },
         success: function(res){
             if(res.status == 'success'){
@@ -200,11 +198,7 @@ $(function() {
           else{
               alert(res.message);
           }
-        },
-        cache: false,
-        contentType: false,
-        processData: false
-
+        }
       });
       return false;
     });

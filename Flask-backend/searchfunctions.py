@@ -289,3 +289,21 @@ def jsonifySellerViewResponse(textbookID):
         res['bids'] = topBids
 
     return jsonify(res)
+
+
+def deleteBook(textbookID):
+    book = Textbook.query.get(textbookID)
+
+    if book is None:
+        return jsonify({'status': 'failure', 'message': 'that textbook does not exist'})
+
+    auction = Auction.query.get(book.auction)
+
+    if auction is None:
+        return jsonify({'status': 'failure', 'message': 'that textbook does not exist'})
+
+    db.session.delete(book)
+    db.session.delete(auction)
+    db.session.commit()
+
+    return jsonify({'status': 'success'})

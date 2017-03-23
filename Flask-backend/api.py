@@ -520,6 +520,11 @@ def seller_page_info():
     return sf.jsonifySellerViewResponse(textbookID)
 
 
+@app.route('/book/delete', methods=['GET'])
+@auth.login_required
+def delete_textbook():
+    pass
+
 
 
 ###### HELPER METHODS FOR APP ROUTES ######

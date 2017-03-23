@@ -97,14 +97,13 @@ $(function() {
     	title: "Book Information",
     	t_bg:"#FFFFFF",
     	t_c: "#C5494C",
-    	img: info.image,
+    	img: info.coverPhoto,
     	side: info.title,
-    	side_2:
-    		`
-    		blurb<br>
-    		Condition: <br>
-            other info
-    		`
+    	side_2: "by: "+info.author,
+    	side_3: "condition: "+info.condition,
+    	side_4: "Auction Closes: "+info.closingDate,
+    	side_5: "Minimum bad: "+info.minimumBid
+
     });
 
     if (hasbid == false){
@@ -117,9 +116,9 @@ $(function() {
     // images
     render("#images", "tp/threeImg.html", {
         title: "Pictures of the Book",
-        first: info.image,
-        second: info.image,
-        third: info.image
+        first: info.bestPhoto,
+        second: info.averagePhoto,
+        third: info.worstPhoto
     });
 
 

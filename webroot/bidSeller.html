@@ -82,11 +82,12 @@ $(function() {
             });
 
             if(data.isCurrent==false){
-                render("#bids", "tp/topBids.html",{
-                    bid_1: data.bids[0],
-                    bid_2: data.bids[1],
-                    bid_3: data.bids[2]
+                
+                data.bids.forEach(function(entry) {
+                    console.log(entry);
+                    render("#bids","tp/winner.html",{bid:entry.bid, profile_link:entry.profile_link,user_name:entry.user_name},"APPEND_MODE")
                 });
+
             }
         }
     }

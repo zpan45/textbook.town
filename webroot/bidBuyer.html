@@ -1,32 +1,112 @@
-<!DOCTYPE html>
+<html>
 <head>
     <title>Place a Bid</title>
-	<!-- Import JS/CSS System Wide Libs -->
-	<!-- Required Global Libs | Full List Maintained in: components/head.html, however HTML import does not exist right now so we need to copy paste, nick researched this for 2 hours with Mark. -->
-		<!-- JS -->
-		<script src="js/mustache.min.js"></script>
-		<script src="js/core.js"></script>
+    <!-- Import JS/CSS System Wide Libs -->
+    <!-- Required Global Libs | Full List Maintained in: components/head.html, however HTML import does not exist right now so we need to copy paste, nick researched this for 2 hours with Mark. -->
+    <!-- JS -->
+    <script src="js/mustache.min.js"></script>
+    <script src="js/core.js"></script>
 
-		<!-- JS Lib -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <!-- JS Lib -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
-		<!-- CSS -->
-		<link rel="stylesheet" type="text/css" href="css/core.css">
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="css/core.css">
 
-		<!-- FONT --><!-- TODO: reduce font weight use before production. -->
-		<link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i" rel="stylesheet">
-		<link href="https://fonts.googleapis.com/css?family=Josefin+Sans:100,100i,300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
+    <!-- FONT --><!-- TODO: reduce font weight use before production. -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:100,100i,300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
+
+    <style>
+        /*table, th, td {*/
+        /*border: 1px solid black;*/
+        /*}*/
+
+        form {
+            margin: auto;
+            position: relative;
+            width: 1100px;
+            height: 1100px;
+            background-color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            padding: 10px;
+            border: 1px solid #999;
+            border: inset 1px solid #333;
+            -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+            -moz-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+            box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+        }
+
+    </style>
 </head>
+
 <body>
-    <div id="top"></div>
+<div id="top"></div>
+<br>
+<form>
 
-    <div id="info"></div>
+    <table align="center" style="width:92%; border-bottom: 1px solid #d84c4c; margin-bottom: 20px;">
+        <tr>
+            <th style="width:100%; height: 0px">
+                <div id="title"></div>
+            </th>
+        </tr>
+    </table>
 
-    <div id="userbid"></div>
+    <table align="center" style="width:92%; margin-bottom: 20px ">
+        <tr>
+            <th style="width:35%; ">
+                <div id="img01"></div>
+            </th>
 
-    <div id="images"></div>
+            <th style="width:65%; vertical-align: top; text-align: left">
+                <div id="info01"></div>
+            </th>
+        </tr>
+    </table>
+    <table align="center" style="width:92%; margin-bottom: 20px">
+        <tr>
+            <th>
+                <div id="userbidbutton" style="float: right;">
+                            <span class="form-field">
+                            <input type="submit" name="postBid" id="postBid" class="button" value="Place Bid" style="width:100px">
+                            </span>
+                </div>
+                <div id="userbidinput" style="float: right">
+                            <span class="form-field">
+                            <input name="bid" id="bidinput" type="number" value="" size="40" aria-required="true" style="width:170px">
+                            </span>
+                </div>
 
-    <div id="stats"></div>
+            </th>
+        </tr>
+    </table>
+    <div style="margin: auto;
+            position: relative;
+            width: 1000px;
+            height: 460px;
+            background-color: #eaf6f7;
+            text-decoration: none;
+            border-radius: 10px;
+            padding: 10px;
+            border: 1px solid #999;
+            border: inset 1px solid #333;
+            -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+            -moz-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+            box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);">
+        <table style="width:100%;">
+            <tr>
+                <th >
+                    <div id="image1"></div>
+                </th>
+            </tr>
+        </table>
+
+    </div>
+    </table>
+
+</form>
 </body>
 
 <script type="text/javascript">
@@ -137,48 +217,14 @@ $(function() {
         third: info.worstPhoto
     });
 
+            first: "img/213kh12kj312k3h1khj3jk12hkj31.png",
+            second: "img/213kh12kj312k3h1khj3jk12hkj31.png",
+            third: "img/213kh12kj312k3h1khj3jk12hkj31.png"
+        });
 
-});
 
-</script>
 
-<script type="text/javascript">
- // json to string on submit and post to dummy file
-  $(function() {
-    $('form#bidForm').submit(function(e) {
-      e.preventDefault();
-
-      var formData = new FormData(this);
-      token = getCookie("session");
-
-      if (token == null){
-          alert("you are not logged in!");
-          window.location.replace("login.html")
-      }
-
-      $.ajax({
-        type: 'POST',
-        url: 'http://127.0.0.1:5000/book/bid',
-        data: formData,
-        headers: {
-      "Authorization": "Basic " + btoa(token + ":" + "")
-        },
-        success: function(res){
-            if(res.status == 'success'){
-            alert("textbook Posted!");
-            window.location.href = "dashboard.html";
-          }
-          else{
-              alert(res.message);
-          }
-        },
-        cache: false,
-        contentType: false,
-        processData: false
-
-      });
-      return false;
     });
-});
+
 </script>
 </html>

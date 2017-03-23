@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
-from flask import Flask, abort, request, jsonify, g, url_for, send_from_directory
-from flask_cors import CORS, cross_origin
+from flask import Flask, abort, request, jsonify, g, send_from_directory
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth
 from passlib.apps import custom_app_context as pwd_context
@@ -11,7 +11,7 @@ import uuid
 
 # Database login information -- uses pymysql as connector --
 # 'mysql+pymysql://user:password@host/database'
-DATABASE_LOGIN_STRING = 'mysql+pymysql://root:password@localhost/textbook_town'
+DATABASE_LOGIN_STRING = 'mysql+pymysql://root:password@localhost/elixir'
 
 SERVER = 'http://127.0.0.1:5000/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])     # allowed file extensions
@@ -30,9 +30,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 db = SQLAlchemy(app)
 CORS(app)
 auth = HTTPBasicAuth()
-
-# import helper functions from validate.py
-from validate import validPubYear, stringToDate, validDateString, validMinimumBid
 
 
 ###### DEFINE THE DATA MODELS ######
@@ -93,6 +90,9 @@ class Textbook(db.Model):
     seller = db.Column(db.Integer)                  # id of the seller
     auction = db.Column(db.Integer)                 # id of the auction
 
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 
 class Bid(db.Model):
     '''
@@ -116,6 +116,12 @@ class Auction(db.Model):
     salePrice = db.Column(db.Integer)                # sale price, updated each time a bid comes in, starts at 0 if no bids
     isCurrent = db.Column(db.Boolean)                # whether or not auction is open
     closingDate = db.Column(db.Date)                 # closing date (auction ends at midnight ET of this day)
+
+
+# IMPORT HERE TO AVOID CIRCULAR IMPORTS
+from validate import validPubYear, stringToDate, validDateString, validBid
+import searchfunctions as sf
+
 
 
 ###### APP ROUTES (API ENDPOINTS) ######
@@ -273,7 +279,7 @@ def add_book():
     rating = int(ratingStr)
 
     # validate minimumBid
-    if validMinimumBid(minimumBidStr):
+    if validBid(minimumBidStr):
         minimumBid = int(minimumBidStr)
     else:
         return jsonify({'status': 'failure', 'message': 'Minimum bid must be a positive integer'})
@@ -330,20 +336,193 @@ def valid_token():
     return jsonify({'status': 'success'})
 
 
-###### TEST ENDPOINTS FOR PRACTICE #######
-
-# Testing login required endpoint
-@app.route('/api/json', methods=['POST'])
+@app.route('/book/bid', methods=['POST'])
 @auth.login_required
-def get_json():
-    print('thing' in request.json)
-    print(g.user.username)
-    thing = request.json.get('thing')
-    return jsonify({'thing': thing})
+def place_bid():
+    '''
+    Backend endpoint to place a bid on a textbook
+    @ SERVER/book/bid?ceiling=num&textbook=id
+    :return:
+    '''
+    if 'bid' not in request.json or 'textbook' not in request.json:
+        print('Bad Request')
+        return jsonify({'status': 'failure', 'message': 'bad request'})
+
+    ceiling = request.json.get('bid')
+    textbookID = request.json.get('textbook')
+
+    if Textbook.query.get(textbookID) is None:
+        return jsonify({'status': 'failure', 'message': 'that textbook does not exist'})
+
+
+    sf.updateIsCurrent(textbookID)
+
+
+    # extra safeguards against misuse of website
+    if sf.userHasAlreadyBidOnTextbook(g.user.id, textbookID):
+        return jsonify({'status': 'failure', 'message': 'only one bid is allowed per textbook'})
+
+    if not sf.userIsBuyerOfTextbook(g.user.id, textbookID):
+        return jsonify({'status': 'failure', 'message': 'you cannot bid on your own textbook'})
+
+
+    associatedAuction = Auction.query.filter_by(textbook=textbookID).first()
+
+    if associatedAuction is None:
+        return jsonify({'status': 'failure', 'message': 'that textbook does not exist'})
+
+    # if bidding has closed
+    if not associatedAuction.isCurrent:
+        return jsonify({'status': 'failure', 'message': 'bidding is no longer open'})
+
+    # Check if the bid is a positive integer
+    if validBid(ceiling):
+        ceilingInt = int(ceiling)
+    else:
+        return jsonify({'status': 'failure', 'message': 'bid must be a positive integer'})
+
+    # if the bid isn't above the minimum, return failure JSON
+    if ceilingInt < associatedAuction.minimumBid:
+        return jsonify({'status': 'failure', 'message': 'bid too low'})
+
+    # Create new bid object with reference to appropriate auction and bidder
+    newBid = Bid(ceiling=ceilingInt, auction=associatedAuction.id, bidder=g.user.id)
+
+    db.session.add(newBid)
+    db.session.commit()
+
+    return jsonify({'status': 'success'})
+
+
+@app.route('/book/search', methods=['GET'])
+def search_for_textbook():
+    '''
+    Searches for textbook based on query string from get request
+    @ SERVER/book/search?q=search%20string
+    '''
+
+    bookList = []
+
+    # If no q parameter specified, perform default search
+    if 'q' not in request.args:
+        for book in sf.search_by_next_closing():
+            bookList.append(sf.collectTextbookSearchResultInfo(book))
+
+        return jsonify({'status': 'success', 'books': bookList})
+
+
+    query = request.args.get('q')
+
+    # If search string is blank, return soonest closing textbooks
+    if query is None or query == '' or query == ' ':
+        # Perform a search for the textbooks with auctions closing the soonest
+        for book in sf.search_by_next_closing():
+            bookList.append(sf.collectTextbookSearchResultInfo(book))
+
+        return jsonify({'status': 'success', 'books': bookList})
+
+    # SHOULD WE ORDER SEARCH RESULTS BY CLOSING DATE NO MATTER WHAT???
+
+    titleResults = sf.search_by_title(query)
+    courseResults = sf.search_by_course(query)
+
+    results = titleResults
+    for tID in (result for result in courseResults if result not in results):
+        results.append(tID)
+
+    # print(titleResults, courseResults)
+    # print(results)
+
+    # IF THERE ARE NO RESULTS, RETURN EMPTY LIST, OR WHAT?
+
+    for book in results:
+        bookList.append(sf.collectTextbookSearchResultInfo(book))
+
+    return jsonify({'status': 'success', 'books': bookList})
+
+
+@app.route('/book/buyercheck', methods=['GET'])
+@auth.login_required
+def user_is_buyer():
+    '''
+    To determine whether the current logged-in user is a buyer or seller of the specified textbook
+    @ SERVER/book/buyercheck?id=textbookID
+    :return:
+    '''
+    if 'id' not in request.args:
+        print('Bad Request')
+        return jsonify({'status': 'failure', 'message': 'bad request'})
+
+    textbookID = request.args.get('id')
+    isBuyer = sf.userIsBuyerOfTextbook(userID=g.user.id, textbookID=textbookID)
+
+    return jsonify({'status': 'success', 'isBuyer': isBuyer})
+
+
+@app.route('/book/hasbid', methods=['GET'])
+@auth.login_required
+def user_has_bid():
+    '''
+    To determine whether the current logged-in user has already bid on the specified textbook
+    @ SERVER/book/hasbid?id=textbookID
+    :return: JSON with all book data
+    '''
+    if 'id' not in request.args:
+        print('Bad Request')
+        return jsonify({'status': 'failure', 'message': 'bad request'})
+
+    textbookID = request.args.get('id')
+    hasBid = sf.userHasAlreadyBidOnTextbook(userID=g.user.id, textbookID=textbookID)
+
+    return jsonify({'status': 'success', 'hasBid': hasBid})
+
+
+@app.route('/book/info', methods=['GET'])
+def buyer_page_info():
+    '''
+    Serve book data to front-end seller view of textbook page
+    @ SERVER/book/info?id=textbookID
+    :return: JSON with all book data (includes top 3 bids if auction is closed)
+    '''
+    if 'id' not in request.args:
+        print('Bad Request')
+        return jsonify({'status': 'failure', 'message': 'bad request'})
+
+    textbookID = request.args.get('id')
+    sf.updateIsCurrent(textbookID)
+
+    return sf.jsonifyBuyerViewResponse(textbookID)
+
+
+@app.route('/book/sellerInfo', methods=['GET'])
+@auth.login_required
+def seller_page_info():
+    '''
+    Serve book data to front-end buyer view of textbook page
+    token @ SERVER/book/info?id=textbookID
+    :return:
+    '''
+
+    if 'id' not in request.args:
+        print('Bad Request')
+        return jsonify({'status': 'failure', 'message': 'bad request'})
+
+    textbookID = request.args.get('id')
+    sf.updateIsCurrent(textbookID)
+
+    # If the user is not selling the textbook, return failure JSON
+    if sf.userIsBuyerOfTextbook(g.user.id, textbookID):
+        return jsonify({"status": "failure", "message": "you are not the seller of this book"})
+
+    # else return all the info to display the page
+    return sf.jsonifySellerViewResponse(textbookID)
+
+
 
 
 ###### HELPER METHODS FOR APP ROUTES ######
 # Can't seem to put these in a separate file, getting some weird circular imports or something so I left them
+
 def allowedFile(filename):
     '''
     Determines if file has a valid extension
@@ -367,6 +546,5 @@ def uniqueFileName(filename):
         filename = secure_filename(str(uuid.uuid4()) + filename[-4:])
     return filename
 
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, threaded=True)

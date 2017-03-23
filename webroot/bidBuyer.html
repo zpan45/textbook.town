@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<head>
+    <title>Place a Bid</title>
+	<!-- Import JS/CSS System Wide Libs -->
+	<!-- Required Global Libs | Full List Maintained in: components/head.html, however HTML import does not exist right now so we need to copy paste, nick researched this for 2 hours with Mark. -->
+		<!-- JS -->
+		<script src="js/mustache.min.js"></script>
+		<script src="js/core.js"></script>
+
+		<!-- JS Lib -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+		<!-- CSS -->
+		<link rel="stylesheet" type="text/css" href="css/core.css">
+
+		<!-- FONT --><!-- TODO: reduce font weight use before production. -->
+		<link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Josefin+Sans:100,100i,300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
+</head>
+<body>
+    <div id="top"></div>
+
+    <div id="info"></div>
+
+    <div id="userbid"></div>
+
+    <div id="images"></div>
+
+    <div id="stats"></div>
+</body>
+
+<script type="text/javascript">
+////
+// Page Render
+//
+$(function() {
+
+    var id = getQueryVariable("id");
+    var info = '';
+    var hasbid = false;
+    var isbuyer = true;
+    token = getCookie("session");
+
+    if ( token != null){
+       	$.ajax({
+		    type: 'GET',
+		    url: 'http://127.0.0.1:5000/book/buyercheck?id=' + id,
+		    headers: {
+			    "Authorization": "Basic " + btoa(token + ":" + "")
+  		    },
+		    success: function(res){
+			    //Parse reply data
+			    if(res.status == 'success'){
+                    isbuyer = res.isBuyer;
+                    console.log(isbuyer)
+			    }
+
+		    }
+	    });
+    }
+
+
+    $.ajax({
+		type: 'GET',
+		url: 'http://127.0.0.1:5000/book/hasbid?id='+id,
+		headers: {
+			"Authorization": "Basic " + btoa(token + ":" + "")
+  		},
+		success: function(res){
+			//Parse reply data
+			if(res.status == 'success'){
+                hasbid = res.hasBid;
+                console.log(hasbid)
+			}
+
+		}
+	});
+
+    if (isbuyer == false){
+         // redirect to Nicole's page and pass ID
+         window.location.replace("index.html");
+    }
+
+    console.log(id)
+
+    $.ajax({
+    type: 'GET',
+    url: 'http://127.0.0.1:5000/book/info?id='+id,   
+
+    success: function(res){
+      //Parse reply data
+
+      if(res.status == 'success'){
+                info = res;
+                console.log(info.coverPhoto)
+      }
+      // Some sort of weird failure--shouldn't happen if people are using the website properly
+      else {
+          // alert(res.message)
+          window.location.replace("dashboard.html")
+      }
+
+    }
+  });
+
+	//Render Top
+	Promise.resolve(render("#top", "tp/head.html", {title: "Place a Bid:"})).then(
+    	menu()
+	);
+
+	// info
+    render("#info", "tp/bookInfo.html", {
+    	title: "Book Information",
+    	t_bg:"#FFFFFF",
+    	t_c: "#C5494C",
+    	img: info.coverPhoto,
+    	side: info.title,
+    	side_2: "by: "+info.author,
+    	side_3: "condition: "+info.condition,
+    	side_4: "Auction Closes: "+info.closingDate,
+    	side_5: "Minimum bad: "+info.minimumBid
+
+    });
+
+    if (hasbid == false){
+        render("#userbid", "tp/bidform.html");
+    }
+    if (hasbid == true){
+        render("#userbid", "tp/havebid.html");
+    }
+
+    // images
+    render("#images", "tp/threeImg.html", {
+        title: "Pictures of the Book",
+        first: info.bestPhoto,
+        second: info.averagePhoto,
+        third: info.worstPhoto
+    });
+
+
+});
+
+</script>
+
+<script type="text/javascript">
+ // json to string on submit and post to dummy file
+  $(function() {
+    $('form#bidForm').submit(function(e) {
+      e.preventDefault();
+
+      var formData = new FormData(this);
+      token = getCookie("session");
+
+      if (token == null){
+          alert("you are not logged in!");
+          window.location.replace("login.html")
+      }
+
+      $.ajax({
+        type: 'POST',
+        url: 'http://127.0.0.1:5000/book/bid',
+        data: formData,
+        headers: {
+      "Authorization": "Basic " + btoa(token + ":" + "")
+        },
+        success: function(res){
+            if(res.status == 'success'){
+            alert("textbook Posted!");
+            window.location.href = "dashboard.html";
+          }
+          else{
+              alert(res.message);
+          }
+        },
+        cache: false,
+        contentType: false,
+        processData: false
+
+      });
+      return false;
+    });
+});
+</script>
+</html>

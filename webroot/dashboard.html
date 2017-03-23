@@ -67,7 +67,7 @@ $(function() {
 
 	//Summon books data with AJAX call for default render.
 	$.ajax({
-		url: 'api/bookList.java',
+		url: 'http://127.0.0.1:5000/book/search',
 		dataType: 'json',
 		success: function(data){
 			//On AJAX success loop over and render results
@@ -103,8 +103,7 @@ $(function() {
 	//On Search Function ACTION.
 	function submitSearch(){
 		query = $('#search_bar_main').val();
-		$.get('api/bookList.java?q=' + query, function(res){
-			res = $.parseJSON(res)
+		$.get('http://127.0.0.1:5000/book/search?q=' + query, function(res){
 			renderBookList(res.books);
 		});
 	}

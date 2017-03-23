@@ -17,7 +17,7 @@ function render(target, template, data, mode){
 function renderBookList(bl){
 	$("#bookList").html("");
 	$.each(bl, function(i, book){
-		render("#bookList", "tp/book.html", {title: book.title, price: book.price, date_closing: book.date_closing, subject: book.subject, img: book.image}, "APPEND_MODE")
+		render("#bookList", "tp/book.html", {title: book.title, price: book.price, date_closing: book.date_closing, subject: book.subject, img: book.image, link: "bidBuyer.html?id="+book.id}, "APPEND_MODE")
 	});
 }
 
@@ -89,4 +89,14 @@ function alert(val){
 
 		//$("").fadeIn("fast").delay(3500).fadeOut(700, );
 	});
+}
+
+function getQueryVariable(variable){
+    var query = window.location.search.substring(1);
+    var vars = query.split("&")
+    for (var i = 0; i<vars.length; i++){
+        var pair = vars[i].split("=");
+        if (pair[0]==variable){return pair[1];}
+    }
+    return(false);
 }

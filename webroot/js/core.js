@@ -89,3 +89,17 @@ function getQueryVariable(variable){
     }
     return(false);
 }
+
+
+
+function alert(val){
+    $.get("components/alert.html", function(alrt) {
+        $("body").prepend(alrt);
+        $("#alert_modal_content").text(val);
+
+        $("#alert_modal").fadeIn({ duration: 500, queue: false }).css('display', 'none').slideDown(500).delay(3500).animate({ height: 'toggle', opacity: 'toggle' }, 'slow', function() { $(this).remove(); });
+
+
+        //$("").fadeIn("fast").delay(3500).fadeOut(700, );
+    });
+}

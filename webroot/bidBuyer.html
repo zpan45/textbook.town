@@ -49,11 +49,10 @@ $(function() {
 			    "Authorization": "Basic " + btoa(token + ":" + "")
   		    },
 		    success: function(res){
-
 			    //Parse reply data
 			    if(res.status == 'success'){
-                    res = $parseJSON(res)
-                    isbuyer = res;
+                    isbuyer = res.isBuyer;
+                    console.log(isbuyer)
 			    }
 
 		    }
@@ -63,29 +62,46 @@ $(function() {
 
     $.ajax({
 		type: 'GET',
-		url: 'http://127.0.0.1:5000/book/buyercheck?id='+id,
+		url: 'http://127.0.0.1:5000/book/hasbid?id='+id,
 		headers: {
 			"Authorization": "Basic " + btoa(token + ":" + "")
   		},
 		success: function(res){
-
 			//Parse reply data
 			if(res.status == 'success'){
-                res = $parseJSON(res)
-                hasbid = res;
+                hasbid = res.hasBid;
+                console.log(hasbid)
 			}
 
 		}
 	});
 
     if (isbuyer == false){
+         // redirect to Nicole's page and pass ID
          window.location.replace("index.html");
     }
 
-    $.get('http://127.0.0.1:5000/book/info?id='+id, function(res){
-		res = $.parseJSON(res)
-		info = res;
-	});
+    console.log(id)
+
+    $.ajax({
+    type: 'GET',
+    url: 'http://127.0.0.1:5000/book/info?id='+id,   
+
+    success: function(res){
+      //Parse reply data
+
+      if(res.status == 'success'){
+                info = res;
+                console.log(info.coverPhoto)
+      }
+      // Some sort of weird failure--shouldn't happen if people are using the website properly
+      else {
+          // alert(res.message)
+          window.location.replace("dashboard.html")
+      }
+
+    }
+  });
 
 	//Render Top
 	Promise.resolve(render("#top", "tp/head.html", {title: "Place a Bid:"})).then(

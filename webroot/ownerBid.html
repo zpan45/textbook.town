@@ -32,8 +32,7 @@
 	<div id="top"></div>
 
 	<!-- Display Books -->
-	<div id="bidList">
-	</div>
+	<div id="bidList"></div>
 </body>
 </html>
 
@@ -45,27 +44,42 @@
 $(function() {
 
 	//Chained rendering for nested items
-	Promise.resolve(render("#top", "tp/head.html", {title: "Make Your Sale:"})).then(
+	Promise.resolve(render("#top", "tp/head.html", {title: "Auction Results:"})).then(
     	menu()
 	);
 
-	$.ajax({
-		//type: 'GET'
-		url: 'api/sellerInfo.java'//'http://127.0.0.1:5000/book/sellerInfo?id=textbookID'
-		//headers: {
-	  //    "Authorization": "Basic " + btoa(token + ":" + "")
-	  //      },
-		dataType: 'json',
-		success: function(res){
+	// need to pass the token in the header with our request
+	token = getCookie("session");
 
-			//Parse reply data
-			if(res.status == 'success'){
-				renderBidList(data.bids); //or something like this
+	// Data grab to get everything that we'll be displaying
+	$.ajax({
+		type: 'GET',
+    	url: 'http://127.0.0.1:5000/book/sellerInfo?id=' + 7,	// THIS IS HARD-CODED FOR NOW-- WE NEED TO GET THE ID, probably from the redirect?
+    	headers: {
+     		"Authorization": "Basic " + btoa(token + ":" + "")
+        },
+
+        success: function(data){
+			if(data.status == 'success'){
+				if(!data.isCurrent) {
+					// If auction has closed, we need to display the top bidders
+					// Could be 0-3 bids -- right now they get rendered like the search result books, we need to change that
+
+					renderTopBids(data.bids); 
+				}
 			}
+			// status = failure, let user know why
 			else {
-				alert("Access Denied.")
+				alert(data.message)
 			}
-		}
+		},
+
+		// If 401 error because user isn't allowed to access the page, redirect to login
+		error: function(res){
+			if(res.status == 401){
+				window.location.replace("login.html");
+			}
+    }
 	});
 
 });

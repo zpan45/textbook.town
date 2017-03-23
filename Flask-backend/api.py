@@ -11,7 +11,9 @@ import uuid
 
 # Database login information -- uses pymysql as connector --
 # 'mysql+pymysql://user:password@host/database'
-DATABASE_LOGIN_STRING = 'mysql+pymysql://root:@localhost/textbook_town'
+
+DATABASE_LOGIN_STRING = 'mysql+pymysql://root:glhsauce@localhost/elixir'
+
 
 SERVER = 'http://127.0.0.1:5000/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])     # allowed file extensions

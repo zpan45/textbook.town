@@ -48,6 +48,17 @@
 //
 $(function() {
 
+  //Check any queued messages
+  function persistentAlert(){
+   message = getCookie("msg");
+   console.log(message)
+    if(message.length > 2){
+     alert(message);
+    }
+   setCookie("msg", "", -1000000);
+  }
+
+  persistentAlert();
 
   //Render Menu and Page title.
   Promise.resolve(render("#top", "tp/head.html", {title: "Book Information"})).then(
@@ -70,6 +81,7 @@ $(function() {
       //Ensure this user is a buyer and not the owner of a book.
       $.ajax({
           type: 'GET',
+          cache: false,
           url: 'http://127.0.0.1:5000/book/buyercheck?id=' + id,
           headers: {
               "Authorization": "Basic " + btoa(token + ":" + "")
@@ -97,6 +109,7 @@ $(function() {
                       headers: {
                           "Authorization": "Basic " + btoa(token + ":" + "")
                       },
+                      cache: false,
 
                       //On return of the has bid data. 
                       success: function(res){
@@ -104,11 +117,13 @@ $(function() {
                         if(res.status == 'success'){
 
                               //Has user bid?
-                              hasbid = res.hasBid;
+                              var hasbid = res.hasBid;
+
 
                               //Query Bid
                               $.ajax({
                                 type: 'GET',
+                                cache: false,
                                 url: 'http://127.0.0.1:5000/book/info?id='+id,   
                                 //When the book info is treutned
                                 success: function(res){
@@ -131,6 +146,8 @@ $(function() {
                                                   side_5: "Minimum bad: "+data.minimumBid
                                                 });
 
+                                                console.log("USER HAS BID: "+ hasbid)
+                                                
                                                 if (hasbid == true){
                                                     $("#userbid").remove();
                                                 }
@@ -147,7 +164,7 @@ $(function() {
                                       // Some sort of weird failure--shouldn't happen if people are using the website properly
                                       else {
                                           // alert(res.message)
-                                          window.location.replace("dashboard.html")
+                                          window.location.replace("0101010101.html")
                                       }
 
                                     }
@@ -167,7 +184,6 @@ $(function() {
               console.log("Not authenticated")
               window.location.replace("login.html");
           }
-
 
       });//Call to check buyer
 
@@ -192,8 +208,8 @@ $(function() {
         },
         success: function(res){
             if(res.status == 'success'){
-            alert("textbook Posted!");
-            window.location.href = "dashboard.html";
+              setCookie("msg", "Your Bid was placed!", 500);
+              window.location.href = "bidBuyer.html?id="+id;
           }
           else{
               alert(res.message);

@@ -1,0 +1,109 @@
+<html>
+<head>
+    <title>Place a Bid</title>
+    <!-- Import JS/CSS System Wide Libs -->
+    <!-- Required Global Libs | Full List Maintained in: components/head.html, however HTML import does not exist right now so we need to copy paste, nick researched this for 2 hours with Mark. -->
+    <!-- JS -->
+    <script src="js/mustache.min.js"></script>
+    <script src="js/core.js"></script>
+
+    <!-- JS Lib -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="css/core.css">
+
+    <!-- FONT --><!-- TODO: reduce font weight use before production. -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:100,100i,300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
+</head>
+<body>
+    <div id="top"></div>
+
+    <div id="info"></div>
+
+    <div id="cancel">
+        <button onlick="deleteAuction()">Cancel Auction</button>
+    </div>
+
+    <div id="bids"></div>
+
+    <div id="images"></div>
+</body>
+
+<script type="text/javascript">
+////
+// Page Render
+//
+$(function() {
+
+
+  //Chained rendering for nested items
+  Promise.resolve(render("#top", "tp/head.html", {title: "Sell a Book"})).then(
+      menu()
+  );
+
+    var id = getQueryVariable("id");
+    var data;
+    token = getCookie("session");
+
+    console.log(id)
+
+    $.ajax({
+    type: 'GET',
+    url: 'http://127.0.0.1:5000/book/sellerinfo?id='+id,
+    headers: {
+            "Authorization": "Basic " + btoa(token + ":" + "")
+    }
+    success: function(res){
+        //Parse reply data
+        if(res.status == 'success'){
+            data = res;
+            // info
+            render("#info", "tp/bookInfo.html", {
+                title: "Book Information",
+                t_bg:"#FFFFFF",
+                t_c: "#C5494C",
+                img: data.coverPhoto,
+                side: data.title,
+                side_2: "by: "+data.author,
+                side_3: "condition: "+data.condition,
+                side_4: "Auction Closes: "+data.closingDate,
+                side_5: "Minimum bad: "+data.minimumBid
+            });
+
+            // images
+            render("#images", "tp/threeImg.html", {
+                title: "Pictures of the Book",
+                first: data.bestPhoto,
+                second: data.averagePhoto,
+                third: data.worstPhoto
+            });
+
+            if(data.isCurrent==false){
+                render("#bids", "tp/topBids.html",{
+                    bid_1: data.bids[0],
+                    bid_2: data.bids[1],
+                    bid_3: data.bids[2]
+                }
+            }
+        }
+    }
+    });
+
+});
+</script>
+<script>
+function deleteAuction(){
+    var id = getQueryVariable("id");
+    token = getCookie("session");
+    $.ajax({
+        type: 'GET',
+        url: 'http://127.0.0.1:5000/book/delete?id=' + id,
+        headers: {
+            "Authorization": "Basic " + btoa(token + ":" + "")
+        }
+    });
+}
+</script>
+</html>

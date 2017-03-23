@@ -48,8 +48,6 @@
 //
 $(function() {
 
-  persistentAlert();
-
   //Render Menu and Page title.
   Promise.resolve(render("#top", "tp/head.html", {title: "Book Information"})).then(
       menu()
@@ -154,7 +152,7 @@ $(function() {
                                       // Some sort of weird failure--shouldn't happen if people are using the website properly
                                       else {
                                           // alert(res.message)
-                                          window.location.replace("0101010101.html")
+                                          window.location.replace("login.html")
                                       }
 
                                     }
@@ -199,7 +197,7 @@ $(function() {
         success: function(res){
             if(res.status == 'success'){
               setCookie("msg", "Your Bid was placed!", 500);
-              window.location.href = "bidBuyer.html?id="+id;
+              window.location.href = "dashboard.html";
           }
           else{
               alert(res.message);

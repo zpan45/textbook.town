@@ -36,10 +36,8 @@
 // Page Render
 //
 $(function() {
-
-
   //Chained rendering for nested items
-  Promise.resolve(render("#top", "tp/head.html", {title: "Sell a Book"})).then(
+  Promise.resolve(render("#top", "tp/head.html", {title: "Auction Status"})).then(
       menu()
   );
 
@@ -51,10 +49,13 @@ $(function() {
 
     $.ajax({
     type: 'GET',
+
     url: 'http://127.0.0.1:5000/book/sellerinfo?id='+id,
+
     headers: {
             "Authorization": "Basic " + btoa(token + ":" + "")
-    }
+    },
+
     success: function(res){
         //Parse reply data
         if(res.status == 'success'){
@@ -85,7 +86,7 @@ $(function() {
                     bid_1: data.bids[0],
                     bid_2: data.bids[1],
                     bid_3: data.bids[2]
-                }
+                });
             }
         }
     }

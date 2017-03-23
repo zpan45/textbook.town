@@ -141,6 +141,7 @@ def userHasAlreadyBidOnTextbook(userID, textbookID):
     '''
     auction = Auction.query.filter_by(textbook=textbookID).first()
     if auction is None:
+        print("WOAH THAT AUCTION DOESN'T EXIST")
         return False
     previousBid = Bid.query.filter_by(auction=auction.id, bidder=userID).first()
 

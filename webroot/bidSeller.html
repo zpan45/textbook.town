@@ -23,7 +23,7 @@
     <div id="info"></div>
 
     <div id="cancel">
-        <button onlick="deleteAuction()">Cancel Auction</button>
+        <button onclick="deleteAuction()">Cancel Auction</button>
     </div>
 
     <div id="bids"></div>
@@ -50,7 +50,7 @@ $(function() {
     $.ajax({
     type: 'GET',
 
-    url: 'http://127.0.0.1:5000/book/sellerinfo?id='+id,
+    url: 'http://127.0.0.1:5000/book/sellerInfo?id='+id,
 
     headers: {
             "Authorization": "Basic " + btoa(token + ":" + "")
@@ -94,15 +94,33 @@ $(function() {
 
 });
 </script>
+
+
 <script>
 function deleteAuction(){
     var id = getQueryVariable("id");
+
+    console.log(id)
     token = getCookie("session");
     $.ajax({
         type: 'GET',
         url: 'http://127.0.0.1:5000/book/delete?id=' + id,
         headers: {
             "Authorization": "Basic " + btoa(token + ":" + "")
+        },
+
+        success: function(res){
+            if (res.status == 'success') {
+                alert("Textbook Deleted")
+            }
+            // something went wrong
+            else {
+                alert(res.message)
+            }
+        },
+
+        error: function(res){
+            window.location.replace("login.html")
         }
     });
 }

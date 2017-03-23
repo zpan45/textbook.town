@@ -26,7 +26,10 @@
         <button onclick="deleteAuction()">Cancel Auction</button>
     </div>
 
-    <div id="bids"></div>
+    <br><br>
+    <center><h2 id="winnerst" style="color:#C5494C;display:none;">Winners:</h2></center>
+    <center><div id="bids"></div></center>
+    <br><br>
 
     <div id="images"></div>
 </body>
@@ -70,7 +73,7 @@ $(function() {
                 side_2: "by: "+data.author,
                 side_3: "condition: "+data.condition,
                 side_4: "Auction Closes: "+data.closingDate,
-                side_5: "Minimum bad: "+data.minimumBid
+                side_5: "Minimum bid: "+data.minimumBid
             });
 
             // images
@@ -82,10 +85,14 @@ $(function() {
             });
 
             if(data.isCurrent==false){
+                $("#cancel").remove();
+                $("#winnerst").fadeIn();
                 
+                ic = 1;
                 data.bids.forEach(function(entry) {
                     console.log(entry);
-                    render("#bids","tp/winner.html",{bid:entry.bid, profile_link:entry.profile_link,user_name:entry.user_name},"APPEND_MODE")
+                    render("#bids","tp/winners.html",{num:ic,bid:entry.bid, profile_link:entry.profile_link,user_name:entry.user_name},"APPEND_MODE")
+                    ic = ic + 1;
                 });
 
             }

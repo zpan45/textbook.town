@@ -17,7 +17,7 @@ function render(target, template, data, mode){
 function renderBookList(bl){
 	$("#bookList").html("");
 	$.each(bl, function(i, book){
-		render("#bookList", "tp/book.html", {title: book.title, price: book.price, date_closing: book.date_closing, subject: book.subject, img: book.image}, "APPEND_MODE")
+		render("#bookList", "tp/book.html", {title: book.title, price: book.price, date_closing: book.date_closing, subject: book.subject, img: book.image, link: "bidBuyer.html?id="+book.id}, "APPEND_MODE")
 	});
 }
 

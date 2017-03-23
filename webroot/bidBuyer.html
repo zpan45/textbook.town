@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<html>
 <head>
     <title>Place a Bid</title>
     <!-- Import JS/CSS System Wide Libs -->
@@ -110,45 +110,96 @@
 </body>
 
 <script type="text/javascript">
-    ////
-    // Page Render
-    //
-    $(function() {
+////
+// Page Render
+//
+$(function() {
 
-        //Render Top
-        Promise.resolve(render("#top", "tp/head.html", {title: "Place a Bid:"})).then(
-                menu()
-        );
+    var id = getQueryVariable("id");
+    var info = '';
+    var hasbid = false;
+    var isbuyer = true;
+    token = getCookie("session");
 
-        // title "book information"
-        render("#title", "tp/bookInfo.html", {
-            title: "Book Information",
-            t_bg:"#FFFFFF",
-            t_c: "#C5494C"
-        });
+    if ( token != null){
+       	$.ajax({
+		    type: 'GET',
+		    url: 'http://127.0.0.1:5000/book/buyercheck?id=' + id,
+		    headers: {
+			    "Authorization": "Basic " + btoa(token + ":" + "")
+  		    },
+		    success: function(res){
 
-        // book cover image
-        render("#img01", "tp/bookInfo3.html", {
-            img: "img/213kh12kj312k3h1khj3jk12hkj31.png"
-        });
+			    //Parse reply data
+			    if(res.status == 'success'){
+                    res = $parseJSON(res)
+                    isbuyer = res;
+			    }
 
-        // info
-        render("#info01", "tp/bookInfo2.html", {
-            side:
-                    `
-    		<h2>Book Title</h2>
-    		<h2>Author</h2>
-    		`,
-            side_2:
-                    `
-    		blurb<br>
-    		condition<br>
-            other info
-    		`
-        });
+		    }
+	    });
+    }
 
-        // first image
-        render("#image1", "tp/threeImg.html", {
+
+    $.ajax({
+		type: 'GET',
+		url: 'http://127.0.0.1:5000/book/buyercheck?id='+id,
+		headers: {
+			"Authorization": "Basic " + btoa(token + ":" + "")
+  		},
+		success: function(res){
+
+			//Parse reply data
+			if(res.status == 'success'){
+                res = $parseJSON(res)
+                hasbid = res;
+			}
+
+		}
+	});
+
+    if (isbuyer == false){
+         window.location.replace("index.html");
+    }
+
+    $.get('http://127.0.0.1:5000/book/info?id='+id, function(res){
+		res = $.parseJSON(res)
+		info = res;
+	});
+
+	//Render Top
+	Promise.resolve(render("#top", "tp/head.html", {title: "Place a Bid:"})).then(
+    	menu()
+	);
+
+	// info
+    render("#info", "tp/bookInfo.html", {
+    	title: "Book Information",
+    	t_bg:"#FFFFFF",
+    	t_c: "#C5494C",
+    	img: info.coverPhoto,
+    	side: info.title,
+    	side_2: "by: "+info.author,
+    	side_3: "condition: "+info.condition,
+    	side_4: "Auction Closes: "+info.closingDate,
+    	side_5: "Minimum bad: "+info.minimumBid
+
+    });
+
+    if (hasbid == false){
+        render("#userbid", "tp/bidform.html");
+    }
+    if (hasbid == true){
+        render("#userbid", "tp/havebid.html");
+    }
+
+    // images
+    render("#images", "tp/threeImg.html", {
+        title: "Pictures of the Book",
+        first: info.bestPhoto,
+        second: info.averagePhoto,
+        third: info.worstPhoto
+    });
 
             first: "img/213kh12kj312k3h1khj3jk12hkj31.png",
             second: "img/213kh12kj312k3h1khj3jk12hkj31.png",

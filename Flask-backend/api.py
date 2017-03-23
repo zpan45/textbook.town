@@ -90,6 +90,9 @@ class Textbook(db.Model):
     seller = db.Column(db.Integer)                  # id of the seller
     auction = db.Column(db.Integer)                 # id of the auction
 
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 
 class Bid(db.Model):
     '''
@@ -333,7 +336,7 @@ def valid_token():
     return jsonify({'status': 'success'})
 
 
-@app.route('/book/bid', methods=['GET'])
+@app.route('/book/bid', methods=['POST'])
 @auth.login_required
 def place_bid():
     '''
@@ -341,13 +344,36 @@ def place_bid():
     @ SERVER/book/bid?ceiling=num&textbook=id
     :return:
     '''
-    if 'ceiling' not in request.args or 'textbook' not in request.args:
+    if 'bid' not in request.json or 'textbook' not in request.json:
         print('Bad Request')
         return jsonify({'status': 'failure', 'message': 'bad request'})
-    ceiling = request.args.get('ceiling')
-    textbookID = request.args.get('textbook')
+
+    ceiling = request.json.get('bid')
+    textbookID = request.json.get('textbook')
+
+    if Textbook.query.get(textbookID) is None:
+        return jsonify({'status': 'failure', 'message': 'that textbook does not exist'})
+
+
+    sf.updateIsCurrent(textbookID)
+
+
+    # extra safeguards against misuse of website
+    if sf.userHasAlreadyBidOnTextbook(g.user.id, textbookID):
+        return jsonify({'status': 'failure', 'message': 'only one bid is allowed per textbook'})
+
+    if not sf.userIsBuyerOfTextbook(g.user.id, textbookID):
+        return jsonify({'status': 'failure', 'message': 'you cannot bid on your own textbook'})
+
 
     associatedAuction = Auction.query.filter_by(textbook=textbookID).first()
+
+    if associatedAuction is None:
+        return jsonify({'status': 'failure', 'message': 'that textbook does not exist'})
+
+    # if bidding has closed
+    if not associatedAuction.isCurrent:
+        return jsonify({'status': 'failure', 'message': 'bidding is no longer open'})
 
     # Check if the bid is a positive integer
     if validBid(ceiling):
@@ -388,7 +414,7 @@ def search_for_textbook():
     query = request.args.get('q')
 
     # If search string is blank, return soonest closing textbooks
-    if query == '' or query == ' ':
+    if query is None or query == '' or query == ' ':
         # Perform a search for the textbooks with auctions closing the soonest
         for book in sf.search_by_next_closing():
             bookList.append(sf.collectTextbookSearchResultInfo(book))
@@ -415,11 +441,12 @@ def search_for_textbook():
     return jsonify({'status': 'success', 'books': bookList})
 
 
-@app.route('/book/topbidders', methods=['GET'])
-def get_top3_bids():
+@app.route('/book/buyercheck', methods=['GET'])
+@auth.login_required
+def user_is_buyer():
     '''
-    Get information on top 3 bidders given a textbook id in a GET request
-    @ SERVER/book/topbidders?id=textbookID
+    To determine whether the current logged-in user is a buyer or seller of the specified textbook
+    @ SERVER/book/buyercheck?id=textbookID
     :return:
     '''
     if 'id' not in request.args:
@@ -427,14 +454,69 @@ def get_top3_bids():
         return jsonify({'status': 'failure', 'message': 'bad request'})
 
     textbookID = request.args.get('id')
-    top3 = sf.determineTop3BidsAfterClose(textbookID)
+    isBuyer = sf.userIsBuyerOfTextbook(userID=g.user.id, textbookID=textbookID)
 
-    topBids = []
-    for bid in top3:
-        user = User.query.get(bid.bidder)
-        topBids.append({'bid': bid.ceiling, 'user_name': user.username, 'profile_link': user.contact})
+    return jsonify({'status': 'success', 'isBuyer': isBuyer})
 
-    return jsonify({'status': 'success', 'bids': topBids})
+
+@app.route('/book/hasbid', methods=['GET'])
+@auth.login_required
+def user_has_bid():
+    '''
+    To determine whether the current logged-in user has already bid on the specified textbook
+    @ SERVER/book/hasbid?id=textbookID
+    :return: JSON with all book data
+    '''
+    if 'id' not in request.args:
+        print('Bad Request')
+        return jsonify({'status': 'failure', 'message': 'bad request'})
+
+    textbookID = request.args.get('id')
+    hasBid = sf.userHasAlreadyBidOnTextbook(userID=g.user.id, textbookID=textbookID)
+
+    return jsonify({'status': 'success', 'hasBid': hasBid})
+
+
+@app.route('/book/info', methods=['GET'])
+def buyer_page_info():
+    '''
+    Serve book data to front-end seller view of textbook page
+    @ SERVER/book/info?id=textbookID
+    :return: JSON with all book data (includes top 3 bids if auction is closed)
+    '''
+    if 'id' not in request.args:
+        print('Bad Request')
+        return jsonify({'status': 'failure', 'message': 'bad request'})
+
+    textbookID = request.args.get('id')
+    sf.updateIsCurrent(textbookID)
+
+    return sf.jsonifyBuyerViewResponse(textbookID)
+
+
+@app.route('/book/sellerInfo', methods=['GET'])
+@auth.login_required
+def seller_page_info():
+    '''
+    Serve book data to front-end buyer view of textbook page
+    token @ SERVER/book/info?id=textbookID
+    :return:
+    '''
+
+    if 'id' not in request.args:
+        print('Bad Request')
+        return jsonify({'status': 'failure', 'message': 'bad request'})
+
+    textbookID = request.args.get('id')
+    sf.updateIsCurrent(textbookID)
+
+    # If the user is not selling the textbook, return failure JSON
+    if sf.userIsBuyerOfTextbook(g.user.id, textbookID):
+        return jsonify({"status": "failure", "message": "you are not the seller of this book"})
+
+    # else return all the info to display the page
+    return sf.jsonifySellerViewResponse(textbookID)
+
 
 
 
@@ -463,7 +545,6 @@ def uniqueFileName(filename):
     while os.path.isfile(os.path.join(app.config['UPLOAD_FOLDER'], filename)):
         filename = secure_filename(str(uuid.uuid4()) + filename[-4:])
     return filename
-
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)

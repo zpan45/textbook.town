@@ -523,7 +523,22 @@ def seller_page_info():
 @app.route('/book/delete', methods=['GET'])
 @auth.login_required
 def delete_textbook():
-    pass
+    '''
+    Delete textbook
+    token @ SERVER/book/delete?id=textbookID
+    :return:
+    '''
+    textbookID = request.args.get('id')
+
+    if textbookID is None:
+        return jsonify({'status': 'failure', 'message': 'bad request'})
+
+    # if the current user is not the seller
+    if sf.userIsBuyerOfTextbook(userID=g.user.id, textbookID=textbookID):
+        return jsonify({'status': 'failure', 'message': 'you are not the owner of that textbook'})
+
+    return sf.deleteBook(textbookID)
+
 
 
 

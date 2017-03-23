@@ -27,7 +27,7 @@
 <div id="top"></div>
 <br>
 <div>
-    <form id="bookInfo" action="" method="post">
+    <form id="bookInfo" action="" style="height:auto;" method="post">
         <table style="width:100%">
 
 
@@ -49,6 +49,16 @@
         <span class="form-field">
           <label for="author">Author</label>
           <input name="author" id="author" type="text" value="" size="40" aria-required="true">
+        </span><br>
+          <span class="form-field">
+          <label for="subject">Subject</label>
+          <input name="subject" id="subject" type="text" value="" size="40" aria-required="false">
+        </span>
+        <br>
+             
+        <span class="form-field">
+          <label for="price">Minimum Bid</label>
+          <input name="price" id="price" type="text" value="" size="40" aria-required="false">
         </span>
                         <br>
         <span class="form-field">
@@ -88,11 +98,7 @@
           <label for="sellby">Date of Auctions End</label>
           <input name="sellby" id="sellby" type="date" aria-required="true">
        </span>
-                        <br>
-       <span class="form-field">
-          <label for="boughton">Date of Books Purchase</label>
-          <input name="boughton" id="boughton" type="date" aria-required="true">
-       </span>
+
                         <br>
                     </div>
 
@@ -125,7 +131,7 @@
 <th>
                <span class="form-field">
           <label for="pic2">Average Page</label>
-          <input class='fileupload' name="pic2" id="pic2" type="file" aria-required="false">
+          <input class='fileupload' name="pic3" id="pic3" type="file" aria-required="false">
         </span>
 </th>
 
@@ -138,8 +144,9 @@
 </tr>
 
 </table>
-</form>
+<br></form>
 </div>
+<br><br>
 </body>
 
 <script type="text/javascript">

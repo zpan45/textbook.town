@@ -210,3 +210,9 @@ input.button:hover {
 textarea:focus, input:focus {
 	border: 1px solid #09C;
 }
+
+.winner_tile{
+	width:30%;
+	background-color: #49BEC4;
+	color:#FFFFFF;
+}

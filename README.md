@@ -70,7 +70,7 @@ nick@Nicks-MacBook-Pro-2:/Applications/XAMPP/xamppfiles/htdocs/elixir/Flask-back
 9. Load frontent using localhost and apache webserver; rejoice as the website is now functional. We recommend trying: (click login, click register, register, login, add book to sell).
 
 ##Project Structure
-* /docs [Our Website](https://nelder.github.io/elixir/): for required team github page about us and our project.
+* /docs [Our Website](https://textbook.town): for required team github page about us and our project.
 * /webroot frontend javascript and designs.
 * /Flash-backend is the backend logic and API to the frontend. It runs on python and mySQL.
-* [Our Team Website](https://nelder.github.io/elixir/): for required team github page about us and our project.
+* [Our Team Website](https://textbook.town): for required team github page about us and our project.

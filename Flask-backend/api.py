@@ -11,7 +11,7 @@ import uuid
 
 # Database login information -- uses pymysql as connector --
 # 'mysql+pymysql://user:password@host/database'
-DATABASE_LOGIN_STRING = 'mysql+pymysql://root:password@localhost/textbooktown'
+DATABASE_LOGIN_STRING = 'mysql+pymysql://root:password@localhost/elixir'
 
 
 SERVER = 'http://127.0.0.1:5000/'

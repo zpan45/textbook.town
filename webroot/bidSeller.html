@@ -20,7 +20,7 @@
 <body>
     <div id="top"></div>
 
-    <div id="info"></div>
+    <center><div id="info"></div></center>
 
     <div id="cancel" class="position:fixed;bottom:50;right:50;">
         <button onclick="deleteAuction()">Cancel Auction</button>
@@ -65,15 +65,12 @@ $(function() {
             data = res;
             // info
             render("#info", "tp/bookInfo.html", {
-                title: "Book Information",
-                t_bg:"#FFFFFF",
-                t_c: "#C5494C",
-                img: data.coverPhoto,
-                side: data.title,
-                side_2: "by: "+data.author,
-                side_3: "condition: "+data.condition,
-                side_4: "Auction Closes: "+data.closingDate,
-                side_5: "Minimum bid: "+data.minimumBid
+              title: "",
+              t_bg:"##EBF5F2",
+              t_c: "#C5494C",
+              img: data.coverPhoto,
+              title: data.title,
+              info: "Author: "+data.author + "<br>Condition: "+data.condition+"%" + "<br>Auction Closes: "+data.closingDate + "<br>Minimum bid: "+data.minimumBid+"<br>Course: "+data.course+"<br>Description: "+data.description+"<br>ISBN: "+data.isbn+"<br>Year: "+data.yearPublished
             });
 
             // images

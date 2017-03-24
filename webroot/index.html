@@ -72,9 +72,9 @@ $(function() {
 	$.get("tp/indexTextBrick.html", function(tmp) {
 
 			//Prepre render a nested template. 
-			first = Mustache.render(tmp, {title: "Post books you do not need anymore.", sub: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do."});
-			second = Mustache.render(tmp, {title: "Your classmates bid their valuation.", sub: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do."});
-			third = Mustache.render(tmp, {title: "Winner Selected & Trade on Campus", sub: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do."});
+			first = Mustache.render(tmp, {title: "Post books you do not need anymore.", sub: "With this amazing website you can sell the websites you do not need anymore. Free up room in your house!"});
+			second = Mustache.render(tmp, {title: "Your classmates bid their valuation.", sub: "Sell to your classmates at a fair price, they all bid the price that they think is fair and pay only that!"});
+			third = Mustache.render(tmp, {title: "Winner Selected & Trade on Campus", sub: "Easily see the top 3 winners and arange to trade with them on campus."});
 
 			//Render parent template.
 			render("#how", "tp/threePane.html", {
@@ -105,7 +105,7 @@ $(function() {
     		`,
     	side_2:
     		`
-    		<a href="#" style='text-decoration:none;'><span class="motion_button">Sell Now</span></a>
+    		<a href="sell.html" style='text-decoration:none;'><span class="motion_button">Sell Now</span></a>
 
     		`
     });

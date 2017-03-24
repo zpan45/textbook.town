@@ -21,17 +21,23 @@
 <body>
     <div id="top"></div>
 
-    <div id="info"></div>
+    <center><div id="info"></div></center>
 
     <div id="userbid">
       
+        <br>
+        <center><h1 class="reversed_title" style="color:#C5494C;">Place a Bid.</h1></center>
+
         <form id="bidform" name="bidform">
-        <span class="form-field">
-            <label for="bid">Bid:</label>
+        <center>
+        <span class="form-field" style="padding-top:50px;padding-bottom:50px;">
+            <label for="bid"></label>
             <input name="bid" id="bid" type="number" value="" size="40" area-required="true">
             <input type="submit" name="postBid" id="postBid" class="button" value="Place Bid">
         </span>
+        </center>
         </form>
+        <br>
 
     </div>
 
@@ -120,18 +126,16 @@ $(function() {
                                                 
                                                 //Store the data
                                                 data = res;
+                                                console.log(data);
 
                                                 //Render the Page
                                                 render("#info", "tp/bookInfo.html", {
-                                                  title: "Book Information",
-                                                  t_bg:"#C5494C",
+                                                  title: "",
+                                                  t_bg:"##EBF5F2",
                                                   t_c: "#C5494C",
                                                   img: data.coverPhoto,
-                                                  side: data.title,
-                                                  side_2: "by: "+data.author,
-                                                  side_3: "condition: "+data.condition+"%",
-                                                  side_4: "Auction Closes: "+data.closingDate,
-                                                  side_5: "Minimum bid: "+data.minimumBid
+                                                  title: data.title,
+                                                  info: "Author: "+data.author + "<br>Condition: "+data.condition+"%" + "<br>Auction Closes: "+data.closingDate + "<br>Minimum bid: "+data.minimumBid+"<br>Course: "+data.course+"<br>Description: "+data.description+"<br>ISBN:"+data.isbn+"<br>Year: "+data.yearPublished
                                                 });
 
                                                 console.log("USER HAS BID: "+ hasbid)

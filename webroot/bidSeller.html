@@ -117,6 +117,8 @@ function deleteAuction(){
         success: function(res){
             if (res.status == 'success') {
                 alert("Textbook Deleted")
+                setTimeout(function(){window.location.replace("dashboard.html")}, 1000);
+
             }
             // something went wrong
             else {

@@ -200,8 +200,8 @@ $(function() {
         },
         success: function(res){
             if(res.status == 'success'){
-              setCookie("msg", "Your Bid was placed!", 500);
-              window.location.href = "dashboard.html";
+              alert("Your Bid was placed!");
+              $("#userbid").fadeOut();
           }
           else{
               alert(res.message);

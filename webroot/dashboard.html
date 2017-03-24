@@ -107,7 +107,14 @@ $(function() {
 	function submitSearch(){
 		query = $('#search_bar_main').val();
 		$.get('http://127.0.0.1:5000/book/search?q=' + query, function(res){
-			renderBookList(res.books);
+			if(res.status=='success'){
+				renderBookList(res.books);
+			}
+			else{
+				renderBookList(res.books);
+				alert(res.message);
+			}
+			
 		});
 	}
 

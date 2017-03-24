@@ -11,8 +11,7 @@ import uuid
 
 # Database login information -- uses pymysql as connector --
 # 'mysql+pymysql://user:password@host/database'
-
-DATABASE_LOGIN_STRING = 'mysql+pymysql://root:@localhost/elixir'
+DATABASE_LOGIN_STRING = 'mysql+pymysql://root:password@localhost/textbooktown'
 
 
 SERVER = 'http://127.0.0.1:5000/'
@@ -439,6 +438,10 @@ def search_for_textbook():
 
     for book in results:
         bookList.append(sf.collectTextbookSearchResultInfo(book))
+
+    if len(results) == 0:
+        return jsonify({'status': 'no_books', 'message': "No books found. Why don't you sell one of your own?",
+                        'books': bookList})
 
     return jsonify({'status': 'success', 'books': bookList})
 

@@ -9,21 +9,33 @@ title: {{ site.name }}
     
     <h2>Workflow</h2>
 	  <p>The branching model we used on GitHub is very simple. 
-		  We pull the files we need from master branch, and develop different tasks assigned to each person 
-		  (we have branches for subtask like back-search, owner-bids, login…). After testing each person’s code, 
-		  ensure there’s no bug, each person will push their code into our master branch.</p>
+		  We pulled the files we need from dev branch, and worked on individual tasks on separate branches 
+		  (we had branches for each subtask like back-search, owner-bids, login, etc.). After testing the completed subtask code to 
+		  ensure there were no bugs, the subtask code was merged into the dev branch. When it was time to submit a deliverable, dev was merged into master.</p>
 	  
-	  <p>Our group uses many development tools/frameworks. For back-end, we used Python-flask to build the back-end code, 
-		  MySQL to build database. For front-end, we used HTML, CSS, JavaScript Jquery, and Mustache rendering System. 
-		  All exchanges is made through REST API for extensibility.</p>
+	  <p>Our group used many development tools/frameworks. For back-end, we used Python-Flask with a MySQL database. For front-end, we used HTML, CSS, JavaScript JQuery, and Mustache rendering system. 
+		  All exchanges are made through REST API for extensibility.</p>
 	  
-	  <p>Our team managed task distribution effectively, we usually discuss about the distribution at the beginning of every
-		  stage during group meeting and update the details on Trello. However, it’s super different to ensure that the work
-		  assigned to each person is balanced. The reason is that, each member has different level and experience of programming,
-		  some of us are already familiar with the languague we use, but some of us has no experience. In conclusion, although we 
-		  cannot ensure everyone has same amount of work, the team still communicates and distributes the work well.</p>
+	  <p>Our team managed task distribution effectively. We usually discussed about the distribution at the beginning of every
+		  stage during our group meeting, and updated the details on Trello. However, it’s super different to ensure that the work
+		  assigned to each person is balanced. This is because each member had different levels of programming experience;
+		  some of us were already familiar with the languages we used, but some of us has no experience. In conclusion, although we 
+		  could not ensure everyone had same amount of work, the team still communicated and distributed the work well.</p>
     
     <h2>MVC / Design Patterns</h2>
+	  <p>We implemented our server-side program as a REST API using Python-Flask. Our model classes are User, Textbook, Bid, and Auction. 
+		  Using SQLAlchemy (our database ORM), these model classes were implemented as subclasses of SQLAlchemy's db.Model.
+		  With Flask and Python, the MVC controllers did not need to be in classes. Instead, they were a collection of functions (known as app routes),
+		  which were mapped to URLs. The view portion of our MVC design was implemented through HTML, CSS, and Javascript files.	
+	  </p>
+	  <p>The MVC communication protocol is as follows: When a user performs an action on the front-end (like clicking a button, or navigating to a new page),
+		  the front-end sends a request, over REST, to the appropriate app route on the back-end. This app route function performs the necessary manipulations
+		  to one of the model classes, and updates the database. The app route then sends a JSON response, over REST, back to the front-end.
+	  </p>
+	  <p>Overall, we believe our code organization was good. The one thing we would consider reorganizing is our back-end file structure.
+		  Our main backend file (api.py) is quite long. Although this wasn't an issue for the project at its current scale,
+		  it might have been a good idea to modularize the back-end code further for ease of maintenance.
+	  </p>
     
     <h2>Refactor Retrospective</h2>
     
@@ -43,12 +55,12 @@ title: {{ site.name }}
 		renders of the graphical elements. 
 		
 		<p>In an organizational perspective, the Trello site used to keep track of tasks was productive to the 
-		project. All members can view the specific tasks that were assigned to them and moniter the progress
+		project. All members could view the specific tasks that were assigned to them and monitor the progress
 		of the group in general. It was a great tool to use.</p> 
 		
 		<p>The most troubling and challenging tool used in the project was Github. It was frustrating when 
 		branches were merged together and conflicts occurred. It took a while to find the errors and fix them
-		so that merging can be done successfully.</p>
+		so that merging could be done successfully.</p>
 
   </body>  
 </div>

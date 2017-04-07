@@ -38,6 +38,30 @@ title: {{ site.name }}
 	  </p>
     
     <h2>Refactor Retrospective</h2>
+	  <p>The code for our project was overall very strong, we went through several refactoring iterations during the project
+		  which really diminshes the "dark corners" to talk about in this retrospective. The positives of our program include:
+		  A strong templating engine to make pages modular and malleable, A consistent and well documented API, and not using grails 
+		  for our backend. Some things we could have done better: a more elegent solution could have been found for html imports, and 
+		  we could have solved the "pyramid of death" in our javascript.		   
+	  </p>
+	  <p> Our modular, template based front end really sped up development, and it also helped people serperate their code from each other
+		  which really reduced conflicts in git. It was also really helpful to have a template library to look at when developing new templates
+		  or pages for peices you could use as a starting point. The API document also made setting up endpoints on both sides of the project very simple,
+		  we could simply add a form or JSON format to the API document, and everyone working on the feature could work independantly on implementation without
+		  needing to wait for the heads up from their other number on the opposite team. Not using GRAILS was great because it allowed us to complete our project.
+          </p>
+	  <p> Most of our unsolved coding problems are more cobwebby corners then dark ones. Features that are functional, but a little messy. We could have cleaned them up
+		  with more time or effort, but they were low priority and thus snuck into the final build. The problem that we will see on every document on the front end
+		  is the large header area, we tried to import this from its own document early on in the project, but many browsers dont allow for html importing, there are 
+		  several available third party javascript libraries that implement this feature, but we decided that implementing a third party library was not in the budget. 
+		  This library would have allowed us to condese our giant header text into one import line, and would have made editing the header information site wide painless,
+		  currently an edit would have to be added to every page manually. There is also several solution to the "pyramid of death" floating around the internet, but once again
+		  since it wasn't broke, we diddn't fix it. There is also only one very egregious example of "pyramid of death" in our javascript, and as far as "pyramids of death" go, its
+		  not even that bad. Leaving the "pyramid of death" in, also allowed our developers to do the Dr. Evil finger qoutes whenever talking about the "pyramid of death" or our website
+		  in general. Every cloud has a silver lining after all.
+	  
+		  
+
     
     <h2>Project Retrospective</h2>
 		<p>Our group communicated well with each other. Tasks were divided up evenly among members and each 
